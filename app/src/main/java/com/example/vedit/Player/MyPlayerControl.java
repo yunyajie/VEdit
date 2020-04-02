@@ -29,7 +29,7 @@ import java.util.logging.Handler;
  * @Version: 1.0
  */
 public class MyPlayerControl implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
-    //日志
+    //日志  上传至GitHub
     private final String TAG="MyPlayerControl";
     //上下文
     private Context mContext;
