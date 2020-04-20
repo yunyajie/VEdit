@@ -11,7 +11,7 @@ public class MediaManager {
 	/** 日志TAG */
 	private String TAG = "MediaManager";
 	/** MediaPlayer对象 */
-	private MediaPlayer mMediaPlayer;
+	private MediaPlayer mediaPlayer;
 	/** 单例实例 */
 	private static MediaManager instance;
 
@@ -27,8 +27,8 @@ public class MediaManager {
 
 	/** 是否播放中  */
 	public boolean isPlaying(){
-		if (mMediaPlayer!=null){
-			return mMediaPlayer.isPlaying();
+		if (mediaPlayer !=null){
+			return mediaPlayer.isPlaying();
 		}
 		return false;
 	}
@@ -36,8 +36,8 @@ public class MediaManager {
 	 * 暂停操作(判断null)
 	 */
 	public void pause(){
-		if(mMediaPlayer != null){
-			mMediaPlayer.pause();
+		if(mediaPlayer != null){
+			mediaPlayer.pause();
 		}
 	}
 
@@ -69,7 +69,7 @@ public class MediaManager {
 //		this.mMeidaListener=mMeidaListener;
 //	}
 
-	public MediaPlayer getmMediaPlayer() {
-		return mMediaPlayer;
+	public MediaPlayer getMediaPlayer() {
+		return mediaPlayer;
 	}
 }

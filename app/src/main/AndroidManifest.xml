@@ -14,8 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.TrimActivity"></activity>
-        <activity android:name=".Activities.EditActivity" />
+        <activity android:name=".Activities.NoTitleActivity"></activity>
+        <activity
+            android:name=".Activities.TrimActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.StartCameraActivity"
             android:theme="@style/AppTheme.NoActionBarTranslucent" />

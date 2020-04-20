@@ -4,4 +4,7 @@
     <external-path
         name="external_file"
         path="." />
+    <files-path
+        name="shared"
+        path="shared/"/>
 </paths>

@@ -10,7 +10,9 @@
     <SurfaceView
         android:id="@+id/ip_surfaceview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:gravity="center"
+        />
 
     <!-- 封面背景 -->
 
@@ -43,7 +45,7 @@
             android:id="@+id/ip_ctime_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:00:00"
+            android:text="@string/initTime"
             android:textColor="@color/white" />
 
         <SeekBar
@@ -68,7 +70,7 @@
             android:id="@+id/ip_ttime_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:00:00"
+            android:text="@string/initTime"
             android:textColor="@color/white" />
 
     </LinearLayout>

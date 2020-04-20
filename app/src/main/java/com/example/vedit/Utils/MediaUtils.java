@@ -26,21 +26,27 @@ public class MediaUtils {
     private int height;//高度
     private int width;//宽度
     private static MediaUtils sMediaUtils;
-    private MediaMetadataRetriever retriever;
+    private static MediaMetadataRetriever retriever;
+    private String title;//文件名
+
     private MediaUtils(){ }
     public static MediaUtils getInstance(){
         if (sMediaUtils==null){
             sMediaUtils=new MediaUtils();
+            retriever=new MediaMetadataRetriever();
         }
         return sMediaUtils;
     }
 
     public void setSource(String filePath){
-        retriever=new MediaMetadataRetriever();
-        retriever.setDataSource(filePath,new HashMap<String, String>());
+
+        retriever.setDataSource(filePath);
+        //设置网络音视频url地址 参数的请求头
+        //retriever.setDataSource(filePath,new HashMap<String, String>());
         duration=Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
         width=Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
         height=Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+        title=retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
     }
     /**
      * Created by Yajie on 2020/3/23 21:19
@@ -69,6 +75,11 @@ public class MediaUtils {
         return null;
     }
 
+    public void RetrieverRelease(){
+        //当一个对象完成时调用，用于释放内存内部分配的内存
+        retriever.release();
+    }
+
 
     public long getDuration() {
         return duration;
@@ -80,4 +91,7 @@ public class MediaUtils {
         return width;
     }
 
+    public String getTitle() {
+        return title;
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.vedit.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -14,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
@@ -27,13 +29,17 @@ import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.example.vedit.R;
+import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.Item;
 import com.example.vedit.Utils.MyAdapter;
+import com.zhihu.matisse.Matisse;
+import com.zhihu.matisse.MimeType;
+import com.zhihu.matisse.engine.impl.GlideEngine;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends NoTitleActivity {
     //权限请求码
     private static final int MY_PERMISSIONS_REQUEST_CODE_EXTRENALSTORAGE= 100;
     private AlertDialog mPermissionDialog;
@@ -223,12 +229,43 @@ public class MainActivity extends AppCompatActivity {
 
     public void startEdit(View view) {
         //Intent intent=new Intent(this,EditActivity.class);
-        Intent intent=new Intent(this,TrimActivity.class);
-        startActivity(intent);
+//        Intent intent=new Intent(this,TrimActivity.class);
+//        startActivity(intent);
+        selectOneVid();
     }
 
     @Override
     public void finish() {
         moveTaskToBack(true);
+    }
+
+    List<Uri>mSelectedPic;
+    List<Uri>mSelectedVid;
+    private static final int REQUEST_CODE_CHOOSEONEVID=101;
+    private static String TAG="MainActivity";
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==REQUEST_CODE_CHOOSEONEVID&&resultCode==RESULT_OK){//选择一个视频
+            mSelectedVid=Matisse.obtainResult(data);
+            Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
+            //创建意图对象
+            Intent intent=new Intent(this,TrimActivity.class);
+            //传递键值对
+            intent.putExtra("SelectedOneVid",new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            startActivity(intent);
+        }
+    }
+    //选择一个视频
+    public void selectOneVid(){
+        if (mSelectedVid!=null) mSelectedVid.clear();
+        Matisse.from(MainActivity.this)
+                .choose(MimeType.ofVideo())
+                .showSingleMediaType(true)
+                .theme(R.style.Matisse_Dracula)
+                .showPreview(true)
+                .imageEngine(new GlideEngine())
+                .forResult(REQUEST_CODE_CHOOSEONEVID);
     }
 }

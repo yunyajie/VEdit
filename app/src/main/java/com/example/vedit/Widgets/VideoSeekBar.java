@@ -1,6 +1,7 @@
 package com.example.vedit.Widgets;
 
 import android.content.Context;
+import android.content.LocusId;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -17,7 +18,9 @@ import android.view.View;
 import android.os.Handler;
 
 import com.example.vedit.R;
+import com.example.vedit.Utils.OthUtils;
 import com.example.vedit.Utils.ScreenUtils;
+import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
 import java.util.Timer;
@@ -80,19 +83,25 @@ public class VideoSeekBar extends View {
     private Paint progressBgPaint = new Paint();
     // ============== 缩略图处理 ===============
     /** 缩略图数量 */
-    private int thumbCount = 7;
+    private int thumbCount = 20;
     /** 缩略图Bitmap */
     private Bitmap[] thumbBitmaps;
     public VideoSeekBar(Context context) {
         super(context);
+        Log.i(TAG,"构造方法1.。。。。。");
+        init();
     }
 
     public VideoSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Log.i(TAG,"构造方法2.。。。。。");
+        init();
     }
 
     public VideoSeekBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        Log.i(TAG,"构造方法3.。。。。。");
+        init();
     }
 
     @Override
@@ -108,7 +117,7 @@ public class VideoSeekBar extends View {
                 }
                 if (thumbBitmaps[i] != null) {
                     try {
-                        // 绘制缩略图
+                        // 绘制缩略图  参数分别为bitmap图，x轴y轴坐标，画笔
                         canvas.drawBitmap(thumbBitmaps[i], i * thumbBitmaps[i].getWidth(), 0, thumbPaint);
                     } catch (Exception e) {
                     }
@@ -198,6 +207,7 @@ public class VideoSeekBar extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
          super.onTouchEvent(event);
+         Log.i(TAG,"滑动啦啦啦啦啦啦啦啦啦");
         // 属于裁剪模式才进行处理
         if(isCutMode){
             // 滑动中的X轴位置
@@ -205,6 +215,7 @@ public class VideoSeekBar extends View {
             // --
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN: // 按下时
+                    Log.i(TAG,"按下。。。。。。。。。");
                     // 这样判断是刚好在之间,为了增加触摸体验,增加多一般的边距触摸优化
                     //if (xMove >= leftSX && xMove <= (leftSX + sliderIgWidth))
                     // --
@@ -225,10 +236,12 @@ public class VideoSeekBar extends View {
                     }
                     break;
                 case MotionEvent.ACTION_MOVE: // 滑动中
+                    Log.i(TAG,"滑动中。。。。。。。。。");
                     // 计算滑动距离
                     reckonSlide(xMove);
                     break;
                 case MotionEvent.ACTION_UP: // 抬起时
+                    Log.i(TAG,"抬起。。。。。。。。。");
                     lrMiddleX = oTouchX = touchView = -1;
                     break;
             }
@@ -244,6 +257,7 @@ public class VideoSeekBar extends View {
         if(rightSX == 0f){ // 默认值为0则表示为最尾端
             rightSX = rightMarginX;
         }
+        Log.i(TAG,"rightSX=="+rightSX+"=======rightMarginX=="+rightMarginX);
     }
     /**
      * 计算滑动
@@ -397,6 +411,7 @@ public class VideoSeekBar extends View {
         rightBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.ic_slider_right);
         // 先保存滑动图片宽度
         sliderIgWidth = leftBitmap.getWidth();
+        Log.i(TAG,"滑动的图片的宽度："+sliderIgWidth);
         // 1 dip 对应的px
         dip = ScreenUtils.dipConvertPx(getContext(), 1.0f);
         // 初始化画笔
@@ -435,6 +450,7 @@ public class VideoSeekBar extends View {
                 xTime = videoDuration / vWidth;
             }
         }
+        Log.i(TAG,"xTime=="+xTime);
         return xTime;
     }
 
@@ -461,6 +477,7 @@ public class VideoSeekBar extends View {
                 rightBitmap = Bitmap.createScaledBitmap(rightBitmap, bWidth, vHeight, true);
             }
         }
+        Log.i(TAG,"滑动的图片为"+((isLeft)?"左图片":"右图片"));
         return isLeft ? leftBitmap : rightBitmap;
     }
 
@@ -497,6 +514,8 @@ public class VideoSeekBar extends View {
         if(!TextUtils.isEmpty(videoUri)){
             // 开启后台线程，生成缩略图
             new Thread(btRunn).start();
+        }else {
+            Log.e(TAG,"videoUri===NULL");
         }
     }
 
@@ -508,23 +527,26 @@ public class VideoSeekBar extends View {
         MediaMetadataRetriever mediaRetriever = new MediaMetadataRetriever();
         try {
             // 防止两个都为默认值
-            while(vWidth == 0 || vHeight == 0){
+            //while(vWidth == 0 || vHeight == 0){///修改过
+            while(vWidth <= 0 || vHeight <= 0){
                 vWidth = getWidth();
                 vHeight = getHeight();
-
-                Log.i(TAG,"vWidth=="+vWidth+"----vHeight=="+vHeight);
 
             }
             // 计算每个图片的宽度(宽度 / 总数)
             int btWidth = vWidth / thumbCount;
             // 图片的高度
             int btHeight = vHeight;
+            Log.i(TAG,"btWith=="+vWidth / thumbCount+"-------------------------btHeight=="+btHeight);
+
+
             // 设置视频的路径
             mediaRetriever.setDataSource(videoUri);
             // 取得视频的长度(单位为毫秒)
             String vTime = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             // 保存视频总长度(毫秒)
             setVideoDuration(Integer.valueOf(vTime));
+            Log.i(TAG,"视频总长度=="+ OthUtils.secToTimeRetain(videoDuration/1000));
             // 进行计算滑动的边距
             getSliderBitmap(true);
             // 计算右边边距值
@@ -743,11 +765,6 @@ public class VideoSeekBar extends View {
         this.videoFrame = videoFrame;
         // --
 
-        /**
-         * Created by Yajie on 2020/4/1 13:27
-         * 初始化
-         */
-        init();
         // 生成缩略图
         buildThumbs();
     }

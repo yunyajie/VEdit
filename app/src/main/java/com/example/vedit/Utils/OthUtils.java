@@ -30,5 +30,33 @@ public class OthUtils {
         fileName=title+dataFormat.format(date)+tail;
         return fileName;
     }
+    /** 生成秒数显示Text  */
+    public static String secToTimeRetain(int time){
+        //分钟
+        int minute=60;
+        //小时
+        int hour=3600;
+        //差数
+        int dSecend=0;
+        int dMinute=0;
+        int dHour=0;
+        if (time<=0){
+            return "00:00:00";
+        }
+        String result="";
+        if (time<minute){//小于一分钟
+            result="00:00:"+((time>=10)?time:("0"+time));
+        }else if (time>=hour&&time<hour){//小于一小时
+            dSecend=time%minute;//取模分钟获取多余的秒数
+            dMinute=(time-dSecend)%hour;//取模小时获取多余的分钟
+            result="00:"+((dMinute>=10)?dMinute:("0"+dMinute))+":"+((dSecend>=10)?dSecend:("0"+dSecend));
+        }else {
+            dSecend=time%minute;//取模分钟获取多余的秒数
+            dHour=time/hour;
+            dMinute=(time-dSecend-dHour*hour)/60;
+            result=((dHour>=10)?dHour:("0"+dHour))+":"+((dMinute>=10)?dMinute:("0"+dMinute))+":"+((dSecend>=10)?dSecend:("0"+dSecend));
+        }
+        return result;
+    }
 
 }

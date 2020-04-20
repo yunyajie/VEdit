@@ -1,86 +1,206 @@
 package com.example.vedit.Activities;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.vedit.Application.MyApplication;
 import com.example.vedit.R;
+import com.example.vedit.Utils.OthUtils;
+import com.example.vedit.Utils.UriUtils;
 import com.example.vedit.Widgets.VideoSeekBar;
 import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class TrimActivity extends AppCompatActivity implements SurfaceHolder.Callback, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+import VideoHandle.EpEditor;
+import VideoHandle.EpVideo;
+import VideoHandle.OnEditorListener;
+
+public class TrimActivity extends Activity implements SurfaceHolder.Callback, View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnCompletionListener {
+    private static final int PROGRESS_CHANGED = 100;
+    private static final int SEEKBAR_CHANGED = 101;
     //上下文
     private Context mContext;
     //日志TAG
-    private final String TAG="TrimActivity";
+    private final String TAG = "TrimActivity";
     //视频剪辑View
     public static VideoSeekBar trim_video_seekbar;
     private SurfaceView ip_surfaceview;
+    private FrameLayout ip_frame;
+
     private ImageView ip_play_igview;
     private TextView ip_ctime_tv;
     private TextView ip_ttime_tv;
     private SeekBar ip_seekbar;
     private SurfaceHolder surfaceHolder;
-    private MediaPlayer mediaPlayer=null;
-    private Uri videopath=Uri.fromFile(new File(MyApplication.getWorkPath(),"L世欢-36.mp4"));
+    private MediaPlayer mediaPlayer = null;
+
+    private TextView trim_start;
+    private TextView trim_end;
+
+    //视频Uri
+    private String videopath;
+    //更新UI
+    private Handler myHandler;
+
+
+    private Timer timer;
+    private TimerTask timerTask;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trim);
-        mContext=TrimActivity.this;
+        mContext = TrimActivity.this;
         initViews();
+        //更新UI
+        myHandler = new MyHandler(this);
     }
 
+    /** 静态内部类  */
+    private static class MyHandler extends Handler {
+        private final WeakReference<TrimActivity> mTarget;
+        private MyHandler(TrimActivity mTarget) {
+            this.mTarget = new WeakReference<TrimActivity>(mTarget);
+        }
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            TrimActivity trimActivity = mTarget.get();
+            if (trimActivity!=null&&trimActivity.mediaPlayer!=null){
+                int currentTime = trimActivity.mediaPlayer.getCurrentPosition();
+                switch (msg.what) {
+                    case PROGRESS_CHANGED:
+                        trimActivity.ip_seekbar.setProgress(currentTime);
+                        trimActivity.ip_ctime_tv.setText(OthUtils.secToTimeRetain(currentTime / 1000));
+                        trim_video_seekbar.setProgressDraw(true);
+                        trim_video_seekbar.setProgress(currentTime);
+                        Log.i(trimActivity.TAG, "startTime==" + OthUtils.secToTimeRetain((int) trim_video_seekbar.getStartTime() / 1000) + "-------------endTime==" + OthUtils.secToTimeRetain((int) trim_video_seekbar.getEndTime() / 1000));
+                        trimActivity.trim_start.setText(OthUtils.secToTimeRetain((int) trim_video_seekbar.getStartTime() / 1000));
+                        trimActivity.trim_end.setText(OthUtils.secToTimeRetain((int) trim_video_seekbar.getEndTime() / 1000));
+                        break;
+                    case SEEKBAR_CHANGED:
+                        trimActivity.ip_seekbar.setProgress(currentTime);
+                        Log.i("进度条改变", "currentTime" + currentTime + "====" + OthUtils.secToTimeRetain(currentTime / 1000));
+                        trimActivity.ip_ctime_tv.setText(OthUtils.secToTimeRetain(currentTime / 1000));
+
+                        Log.i(trimActivity.TAG, "startTime==" + OthUtils.secToTimeRetain((int) trim_video_seekbar.getStartTime() / 1000) + "-------------endTime==" + OthUtils.secToTimeRetain((int) trim_video_seekbar.getEndTime() / 1000));
+
+                        break;
+                }
+            }
+        }
+    }
+
+
     private void initViews() {
-        trim_video_seekbar=(VideoSeekBar)findViewById(R.id.trim_video_seekbar);
-        ip_surfaceview=(SurfaceView)findViewById(R.id.ip_surfaceview);
-        ip_play_igview=(ImageView)findViewById(R.id.ip_play_igview);
-        ip_ctime_tv=(TextView)findViewById(R.id.ip_ctime_tv);
-        ip_ttime_tv=(TextView)findViewById(R.id.ip_ttime_tv);
-        ip_seekbar=(SeekBar)findViewById(R.id.ip_seekbar);
+        //初始化数据
+        Intent intent=getIntent();
+        //videopath=Uri.fromFile(new File(intent.getStringExtra("SelectedOneVid")));
+        Log.e(TAG,intent.getStringExtra("SelectedOneVid"));
+        //获取选择的视频
+        videopath=intent.getStringExtra("SelectedOneVid");
+
+        trim_video_seekbar = (VideoSeekBar) findViewById(R.id.trim_video_seekbar);
+        ip_surfaceview = (SurfaceView) findViewById(R.id.ip_surfaceview);
+        ip_frame = (FrameLayout) findViewById(R.id.ip_frame);
+
+        ip_play_igview = (ImageView) findViewById(R.id.ip_play_igview);
+        ip_ctime_tv = (TextView) findViewById(R.id.ip_ctime_tv);
+        ip_ttime_tv = (TextView) findViewById(R.id.ip_ttime_tv);
+        ip_seekbar = (SeekBar) findViewById(R.id.ip_seekbar);
+        trim_start = (TextView) findViewById(R.id.trim_start);
+        trim_end = (TextView) findViewById(R.id.trim_end);
 
         ip_play_igview.setOnClickListener(this);
         ip_seekbar.setOnSeekBarChangeListener(this);
 
         //初始化surfaceholder类，SurfaceView的控制器
-        surfaceHolder=ip_surfaceview.getHolder();
+        surfaceHolder = ip_surfaceview.getHolder();
         surfaceHolder.addCallback(this);
-
-        //视频剪辑View
+        //视频预览
         trim_video_seekbar.reset();
-        trim_video_seekbar.setProgressDraw(true);
-        trim_video_seekbar.setProgressLine(true);
-        trim_video_seekbar.setProgressBG(true);
-        trim_video_seekbar.setCutMode(true,true);
-        float videoFrame=60*1000f;
-//        try {
-            trim_video_seekbar.setVideoUri(true,videopath.getPath());
-//        }catch (Exception e){
-//            Log.i(TAG,"无法绘制预览图");
-//            Log.i(TAG,e.toString());
-//        }
+        trim_video_seekbar.setVideoUri(true,videopath);
+
+        //初始化对话框
+        mProgressDialog=new ProgressDialog(this);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setMax(100);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setTitle("正在处理...");
+
+
+
+        timer=new Timer();
+        timerTask=new TimerTask() {
+            @Override
+            public void run() {
+                Message message = new Message();
+                message.what = PROGRESS_CHANGED;
+                //更新进度条
+                myHandler.sendMessage(message);
+            }
+        };
+
 
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mediaPlayer=MediaPlayer.create(this,videopath);
+        mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnVideoSizeChangedListener(this);
+        mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setDisplay(surfaceHolder);//设置显示视频显示在SurfaceView上
+        playVideo(Uri.parse(videopath));
+    }
+
+    private void playVideo(Uri uri) {
+        try {
+            mediaPlayer.setDataSource(this, uri);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            ip_seekbar.setMax(mediaPlayer.getDuration());
+            ip_ttime_tv.setText(OthUtils.secToTimeRetain(mediaPlayer.getDuration() / 1000));
+
+
+            timer.schedule(timerTask,1000,1000);
+
+//            VideoThread videoThread = new VideoThread();
+//            videoThread.start();
+
+            changePlayerView(true);
+        } catch (IOException e) {
+            Log.i(TAG, "播放视频失败");
+        }
     }
 
     @Override
@@ -91,22 +211,30 @@ public class TrimActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         super.onDestroy();
-        if (mediaPlayer.isPlaying()){
+        if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
         }
+        mediaPlayer.reset();
         mediaPlayer.release();
+        mediaPlayer = null;
 
+    }
+
+    private void changePlayerView(boolean isPlaying) {
+        ip_play_igview.setImageResource(isPlaying ? R.mipmap.ic_media_stop : R.mipmap.ic_media_play);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.ip_play_igview:
-                Log.i(TAG,"点击了播放或暂停");
-                if (mediaPlayer.isPlaying()){
+                Log.i(TAG, "点击了播放或暂停");
+                if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
-                }else {
+                    changePlayerView(false);
+                } else {
                     mediaPlayer.start();
+                    changePlayerView(true);
                 }
                 break;
 
@@ -115,19 +243,142 @@ public class TrimActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        Log.i(TAG,"SeekBar改变。。。");
+        Log.i(TAG, "SeekBar改变。。。");
 
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
 
-        Log.i(TAG,"SeekBar拖动。。。");
+        Log.i(TAG, "SeekBar拖动。。。");
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        Log.i(TAG,"SeekBar停止拖动。。。");
+        Log.i(TAG, "SeekBar停止拖动。。。");
+        int process = ip_seekbar.getProgress();
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.seekTo(process);
+            Message message = new Message();
+            message.what = SEEKBAR_CHANGED;
+            myHandler.sendMessage(message);
+        }
 
     }
+
+    @Override
+    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+        changeVideoSize();
+    }
+
+    private void changeVideoSize() {
+        int videoWith = mediaPlayer.getVideoWidth();
+        int videoHeight = mediaPlayer.getVideoHeight();
+        //surfaceView的宽高
+        int surfaceWith = ip_surfaceview.getWidth();
+        int surfaceHeight = ip_surfaceview.getHeight();
+        //根据视频尺寸计算视频可以在surfaceView中放大的最大倍数
+        float max;
+        //竖屏模式下按视频宽度计算放大倍数
+        max = Math.max((float) videoWith / (float) surfaceWith, (float) videoHeight / (float) surfaceHeight);
+        //视频宽高分别/最大倍数 计算出放大后的视频尺寸
+        videoWith = (int) Math.ceil((float) videoWith / max);
+        videoHeight = (int) Math.ceil((float) videoHeight / max);
+        //无法直接设置视频尺寸，将计算出的视频尺寸设置到surfaceView让视频自动填充
+        ip_surfaceview.setLayoutParams(new FrameLayout.LayoutParams(videoWith, videoHeight));
+    }
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        Log.i(TAG, "视频播放完成");
+        mediaPlayer.seekTo(0);
+        if (!mediaPlayer.isPlaying()){
+            mediaPlayer.start();
+        }
+        Message message = new Message();
+        message.what = SEEKBAR_CHANGED;
+        myHandler.sendMessage(message);
+
+    }
+
+    //视频进度条更新
+    class VideoThread extends Thread {
+        @Override
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                Message message = new Message();
+                message.what = PROGRESS_CHANGED;
+                //更新进度条
+                myHandler.sendMessage(message);
+//                if (mediaPlayer.getCurrentPosition()==mediaPlayer.getDuration()){
+//                    return;
+//                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            Log.i(TAG, "进程运行结束");
+
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        myHandler.removeMessages(PROGRESS_CHANGED);
+        timer.cancel();
+        timerTask.cancel();
+        timerTask=null;
+        timer=null;
+        if (mediaPlayer!=null){
+            Log.i(TAG,"mediaPlayer--in--onDestroy--释放中");
+            if (mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+            }
+            mediaPlayer.reset();
+            mediaPlayer.release();
+            mediaPlayer=null;
+        }
+        super.onDestroy();
+    }
+    private ProgressDialog mProgressDialog;
+    //剪辑时长
+    public void trimDuration(View view) {
+        //获取开始时间和结束时间--单位毫秒
+        float startTime=trim_video_seekbar.getStartTime()/1000;
+        float endTime=trim_video_seekbar.getEndTime()/1000;
+        EpVideo epVideo=new EpVideo(videopath);
+        epVideo.clip(startTime,endTime-startTime);
+        mProgressDialog.setProgress(0);
+        mProgressDialog.show();
+        final String outPath=MyApplication.getSavePath()+OthUtils.createFileName("VIDEO","mp4");
+        EpEditor.exec(epVideo, new EpEditor.OutputOption(outPath),
+                new OnEditorListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TAG,"视频时长剪辑成功");
+                        mProgressDialog.dismiss();
+                        //播放视频
+                        Intent v=new Intent(Intent.ACTION_VIEW);
+                        v.setDataAndType(Uri.parse(outPath),"video/mp4");
+                        startActivity(v);
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        mProgressDialog.dismiss();
+                        Log.d(TAG,"编辑失败");
+                    }
+
+                    @Override
+                    public void onProgress(float progress) {
+                         mProgressDialog.setProgress((int)(progress*100));
+                    }
+                });
+
+    }
+
+
+
 }

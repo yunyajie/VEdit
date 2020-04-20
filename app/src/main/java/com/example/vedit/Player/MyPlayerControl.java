@@ -29,7 +29,7 @@ import java.util.logging.Handler;
  * @Version: 1.0
  */
 public class MyPlayerControl implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
-    //日志  上传至GitHub
+    //日志
     private final String TAG="MyPlayerControl";
     //上下文
     private Context mContext;
@@ -84,19 +84,21 @@ public class MyPlayerControl implements View.OnClickListener, SeekBar.OnSeekBarC
 
     /** 初始化View  */
     private void initViews() {
-        ip_surfaceview=(SurfaceView)window.findViewById(R.id.ip_surfaceview);
-        ip_function_linear=(LinearLayout)window.findViewById(R.id.ip_function_linear);
-        ip_play_igview=(ImageView)window.findViewById(R.id.ip_play_igview);
-        ip_ctime_tv=(TextView)window.findViewById(R.id.ip_ctime_tv);
-        ip_ttime_tv=(TextView)window.findViewById(R.id.ip_ttime_tv);
-        ip_seekbar=(SeekBar)window.findViewById(R.id.ip_seekbar);
+        if (window!=null){
+            ip_surfaceview=(SurfaceView)window.findViewById(R.id.ip_surfaceview);
+            ip_function_linear=(LinearLayout)window.findViewById(R.id.ip_function_linear);
+            ip_play_igview=(ImageView)window.findViewById(R.id.ip_play_igview);
+            ip_ctime_tv=(TextView)window.findViewById(R.id.ip_ctime_tv);
+            ip_ttime_tv=(TextView)window.findViewById(R.id.ip_ttime_tv);
+            ip_seekbar=(SeekBar)window.findViewById(R.id.ip_seekbar);
+        }
     }
 
     /**
      * Created by Yajie on 2020/3/31 21:11
      * 设置播放View显示的图标
      */
-    private void playerView(boolean isPlaying){
+    private void changePlayerView(boolean isPlaying){
         ip_play_igview.setImageResource(isPlaying? R.mipmap.ic_media_stop:R.mipmap.ic_media_play);
     }
 
@@ -109,7 +111,7 @@ public class MyPlayerControl implements View.OnClickListener, SeekBar.OnSeekBarC
                 //如果播放中，则显示暂停
                 boolean isPlaying=MediaManager.getInstance().isPlaying();
                 //进行取反设置
-                playerView(!isPlaying);
+                changePlayerView(!isPlaying);
                 //播放中则进行暂停
                 if (isPlaying){
                     //暂停定时器
@@ -143,19 +145,27 @@ public class MyPlayerControl implements View.OnClickListener, SeekBar.OnSeekBarC
         //滑动结束
         //获取滑动值
         int touchTime=seekBar.getProgress();
-        MediaPlayer mediaPlayer=MediaManager.getInstance().getmMediaPlayer();
+        MediaPlayer mediaPlayer=MediaManager.getInstance().getMediaPlayer();
         if (mediaPlayer!=null){
             //设置当前进度
             ip_seekbar.setProgress(touchTime);
             //刷新播放时间
-
+            refPlayerTime();
+            //设置滑动进度
+            mediaPlayer.seekTo(touchTime);
+            //播放
             if (!mediaPlayer.isPlaying()){
                 mediaPlayer.start();
             }
 
             //切换播放图标
-            playerView(true);
+            changePlayerView(true);
         }
+    }
+
+    //刷新播放事件
+    private void refPlayerTime() {
+
     }
 
 
