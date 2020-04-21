@@ -1,9 +1,9 @@
 package com.example.vedit.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.Window;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class NoTitleActivity extends AppCompatActivity {
 

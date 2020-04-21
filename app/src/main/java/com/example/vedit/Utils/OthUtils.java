@@ -1,5 +1,7 @@
 package com.example.vedit.Utils;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,6 +18,8 @@ import java.util.Date;
  * @Version: 1.0
  */
 public class OthUtils {
+
+    private final static String TAG="OthUtils";
 
 
     /**
@@ -56,6 +60,7 @@ public class OthUtils {
             dMinute=(time-dSecend-dHour*hour)/60;
             result=((dHour>=10)?dHour:("0"+dHour))+":"+((dMinute>=10)?dMinute:("0"+dMinute))+":"+((dSecend>=10)?dSecend:("0"+dSecend));
         }
+        Log.d(TAG,result);
         return result;
     }
 

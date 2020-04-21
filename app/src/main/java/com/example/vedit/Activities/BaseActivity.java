@@ -6,8 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 
 /**
  * Created by Yajie on 2020/3/18 23:55

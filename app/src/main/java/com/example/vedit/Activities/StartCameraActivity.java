@@ -1,12 +1,5 @@
 package com.example.vedit.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -22,18 +15,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
 import com.example.vedit.Application.MyApplication;
+import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.example.vedit.Utils.OthUtils;
-import com.example.vedit.Utils.UriUtils;
 
 import java.io.File;
 
 public class StartCameraActivity extends AppCompatActivity {
-    //权限请求码
-    private static final int MY_PERMISSIONS_REQUEST_CODE_CAMERA= 101;
-    private static final int REQUEST_CAPTURE_IMAGE =1;//拍照码
-    private static final int REQUEST_CAPTURE_VIDEO=3;//录像码
     private static final String SAVE_PATH = MyApplication.getWorkPath();
     private AlertDialog mPermissionDialog;
     private String mPackName="com.example.vedit";
@@ -61,14 +57,14 @@ public class StartCameraActivity extends AppCompatActivity {
          */
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)!=
                 PackageManager.PERMISSION_GRANTED){//没有权限
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},MY_PERMISSIONS_REQUEST_CODE_CAMERA);
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA}, FinalConstants.MY_PERMISSIONS_REQUEST_CODE_CAMERA);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
-            case MY_PERMISSIONS_REQUEST_CODE_CAMERA:
+            case FinalConstants.MY_PERMISSIONS_REQUEST_CODE_CAMERA:
                 //如果被拒绝结果数组为空
                 if (grantResults.length>0&&
                         grantResults[0]==PackageManager.PERMISSION_GRANTED){
@@ -146,7 +142,7 @@ public class StartCameraActivity extends AppCompatActivity {
 
         if (intent.resolveActivity(getPackageManager())!=null){
             intent.putExtra(MediaStore.EXTRA_OUTPUT,videoUri);
-            startActivityForResult(intent,REQUEST_CAPTURE_VIDEO);
+            startActivityForResult(intent,FinalConstants.REQUEST_CAPTURE_VIDEO);
         }
     }
 
@@ -181,7 +177,7 @@ public class StartCameraActivity extends AppCompatActivity {
 
             intent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri);
 
-            startActivityForResult(intent,REQUEST_CAPTURE_IMAGE);
+            startActivityForResult(intent,FinalConstants.REQUEST_CAPTURE_IMAGE);
         }
     }
 
@@ -189,7 +185,7 @@ public class StartCameraActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CAPTURE_IMAGE:
+            case FinalConstants.REQUEST_CAPTURE_IMAGE:
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(this, "照片已保存到本地", Toast.LENGTH_SHORT).show();
                 } else {
@@ -197,7 +193,7 @@ public class StartCameraActivity extends AppCompatActivity {
                 }
                 finish();
                 break;
-            case REQUEST_CAPTURE_VIDEO:
+            case FinalConstants.REQUEST_CAPTURE_VIDEO:
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(this, "拍摄完成", Toast.LENGTH_SHORT).show();
                 } else {

@@ -1,7 +1,6 @@
 package com.example.vedit.Widgets;
 
 import android.content.Context;
-import android.content.LocusId;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,18 +8,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
+import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.os.Handler;
 
 import com.example.vedit.R;
 import com.example.vedit.Utils.OthUtils;
 import com.example.vedit.Utils.ScreenUtils;
-import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
 import java.util.Timer;
@@ -30,7 +28,7 @@ import java.util.TimerTask;
  * @ProjectName: VEdit
  * @Package: com.example.vedit.Widgets
  * @ClassName: VideoSeekBar
- * @Description: java类作用描述
+ * @Description: 视频预览控件
  * @Author: yunyajie
  * @CreateDate: 2020/3/30 20:58
  * @UpdateUser: 更新者：
@@ -207,7 +205,6 @@ public class VideoSeekBar extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
          super.onTouchEvent(event);
-         Log.i(TAG,"滑动啦啦啦啦啦啦啦啦啦");
         // 属于裁剪模式才进行处理
         if(isCutMode){
             // 滑动中的X轴位置

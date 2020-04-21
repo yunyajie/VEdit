@@ -1,6 +1,15 @@
 package com.example.vedit.Player;
 
+import android.app.Activity;
+import android.content.Context;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.widget.ImageView;
+
+import com.example.vedit.R;
+import com.example.vedit.Utils.MyAdapter;
+
+import java.io.IOException;
 
 
 /**
@@ -14,7 +23,12 @@ public class MediaManager {
 	private MediaPlayer mediaPlayer;
 	/** 单例实例 */
 	private static MediaManager instance;
-
+	/** 上下文  */
+	private  Context context;
+	/** 视频路径*/
+	private Uri videoPath;
+	/** 视频时长  */
+	private int duration;
 	// --------------------
 	private MediaManager() {}
     public static MediaManager getInstance(){
@@ -24,7 +38,21 @@ public class MediaManager {
 		return instance;
 	}
 
-
+    /** 初始化 */
+    public void init(Activity activity, Uri videoPath){
+    	if (mediaPlayer==null){
+    		mediaPlayer=new MediaPlayer();
+		}
+    	this.context=activity;
+    	this.videoPath=videoPath;
+		try {
+			mediaPlayer.setDataSource(context,videoPath);
+			mediaPlayer.prepare();
+			this.duration=mediaPlayer.getDuration();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	/** 是否播放中  */
 	public boolean isPlaying(){
 		if (mediaPlayer !=null){
@@ -40,35 +68,38 @@ public class MediaManager {
 			mediaPlayer.pause();
 		}
 	}
-
-//	// =============== 封装回调事件 =================
-//	/** MediaPlayer回调事件 */
-//	private MediaListener mMeidaListener;
-//
-//	/** MediaPlayer回调接口 */
-//	public interface MediaListener {
-//
-//		void onPrepared();
-//
-//		void onCompletion();
-//
-//		void onBufferingUpdate(int percent);
-//
-//		void onSeekComplete();
-//
-//		void onError(int what, int extra);
-//
-//		void onVideoSizeChanged(int width, int height);
-//	}
-//
-//	/**
-//	 * Created by Yajie on 2020/4/1 12:09
-//	 * 设置MediaPlayer回调
-//	 */
-//	public void setmMeidaListener(MediaListener mMeidaListener){
-//		this.mMeidaListener=mMeidaListener;
-//	}
-
+	/**
+	 * 播放操作
+	 */
+	public void play(){
+		if (mediaPlayer!=null){
+			if (!isPlaying()){
+				mediaPlayer.start();
+			}
+		}
+	}
+	/** SeekTo  */
+	public void seekTo(int process){
+		if (mediaPlayer!=null){
+			mediaPlayer.seekTo(process);
+		}
+	}
+	/** 销毁*/
+	public void destory(){
+		if (mediaPlayer!=null){
+			if (isPlaying()){
+				mediaPlayer.stop();
+			}
+			mediaPlayer.reset();
+			mediaPlayer.release();
+			mediaPlayer=null;
+		}
+	}
+	/** 循环  */
+	public void loop(){
+		seekTo(0);
+		play();
+	}
 	public MediaPlayer getMediaPlayer() {
 		return mediaPlayer;
 	}

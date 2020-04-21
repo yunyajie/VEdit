@@ -8,35 +8,19 @@ public class FinalConstants {
 	/** 基数 */
 	public static final int FINAL_BASE = 1000;
 	// --
-	/** 返回 */
-	public static final int BACK = FINAL_BASE + 1;
-	/** 全屏 */
-	public static final int FULL_SCREEN = FINAL_BASE + 2;
-	/** 播放 */
-	public static final int PLAY_START = FINAL_BASE + 3;
-	/** 恢复播放 */
-	public static final int PLAY_RESTART = FINAL_BASE + 4;
-	/** 暂停播放 */
-	public static final int PLAY_PAUSE = FINAL_BASE + 5;
-	/** 播放结束 */
-	public static final int PLAY_COMPLE = FINAL_BASE + 6;
-	/** 播放时间定时器触发 */
-	public static final int PLAY_TIME = FINAL_BASE + 7;
-	/** 倒计时定时器触发 */
-	public static final int COUNT_DOWN = FINAL_BASE + 8;
-	/** 重新加载 */
-	public static final int RELOAD = FINAL_BASE + 9;
-	/** 播放异常 */
-	public static final int PLAY_ERROR = FINAL_BASE + 10;
-	/** 播放时间改变触发 */
-	public static final int PLAY_TIME_CHANGE = FINAL_BASE + 11;
+	/** 外存权限申请码*/
+	public static final int MY_PERMISSIONS_REQUEST_CODE_EXTRENALSTORAGE = FINAL_BASE + 1;
+	/**  选择一个视频请求码 */
+	public static final int REQUEST_CODE_CHOOSEONEVID=FINAL_BASE+2;
+    /**  进度条前进 */
+	public static final int PROGRESS_CHANGED=FINAL_BASE+3;
+	/** 进度条改变  */
+	public static final int SEEKBAR_CHANGED =FINAL_BASE+4;
+	//** 相机权限请求码*/
+	public static final int MY_PERMISSIONS_REQUEST_CODE_CAMERA=FINAL_BASE+5;
+	/** 拍照码  */
+	public static final int REQUEST_CAPTURE_IMAGE =FINAL_BASE+6;
+	/** 录像码  */
+	public static final int REQUEST_CAPTURE_VIDEO=FINAL_BASE+7;
 
-	/** 封面地址 */
-	public static final String COVER_URL = "coverUrl";
-	/** 视频地址 */
-	public static final String VIDEO_URL = "videoUrl";
-	/** 是否播放结束 */
-	public static final String IS_PLAY_FINISH = "isPlayFinish";
-	/** 是否点击Home键 */
-	public static final String IS_CLICK_HOME = "isClickHome";
 }

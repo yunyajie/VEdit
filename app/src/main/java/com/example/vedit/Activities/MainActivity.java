@@ -1,11 +1,5 @@
 package com.example.vedit.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
@@ -24,10 +17,16 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.Item;
@@ -40,8 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends NoTitleActivity {
-    //权限请求码
-    private static final int MY_PERMISSIONS_REQUEST_CODE_EXTRENALSTORAGE= 100;
     private AlertDialog mPermissionDialog;
     private String mPackName="com.example.vedit";
     private ImageButton ib_camera;
@@ -171,14 +168,14 @@ public class MainActivity extends NoTitleActivity {
          */
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=
                 PackageManager.PERMISSION_GRANTED){//没有权限
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},MY_PERMISSIONS_REQUEST_CODE_EXTRENALSTORAGE);
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, FinalConstants.MY_PERMISSIONS_REQUEST_CODE_EXTRENALSTORAGE);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
-            case MY_PERMISSIONS_REQUEST_CODE_EXTRENALSTORAGE:
+            case FinalConstants.MY_PERMISSIONS_REQUEST_CODE_EXTRENALSTORAGE:
                 //如果被拒绝结果数组为空
                 if (grantResults.length>0&&
                 grantResults[0]==PackageManager.PERMISSION_GRANTED){
@@ -241,13 +238,12 @@ public class MainActivity extends NoTitleActivity {
 
     List<Uri>mSelectedPic;
     List<Uri>mSelectedVid;
-    private static final int REQUEST_CODE_CHOOSEONEVID=101;
     private static String TAG="MainActivity";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==REQUEST_CODE_CHOOSEONEVID&&resultCode==RESULT_OK){//选择一个视频
+        if (requestCode==FinalConstants.REQUEST_CODE_CHOOSEONEVID&&resultCode==RESULT_OK){//选择一个视频
             mSelectedVid=Matisse.obtainResult(data);
             Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
             //创建意图对象
@@ -266,6 +262,6 @@ public class MainActivity extends NoTitleActivity {
                 .theme(R.style.Matisse_Dracula)
                 .showPreview(true)
                 .imageEngine(new GlideEngine())
-                .forResult(REQUEST_CODE_CHOOSEONEVID);
+                .forResult(FinalConstants.REQUEST_CODE_CHOOSEONEVID);
     }
 }

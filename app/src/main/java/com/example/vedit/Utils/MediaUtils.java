@@ -2,10 +2,6 @@ package com.example.vedit.Utils;
 
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
-import android.os.Build;
-import android.util.Log;
-
-import java.util.HashMap;
 
 /**
  * @ProjectName: EpMediaTest
@@ -22,9 +18,9 @@ import java.util.HashMap;
 
 
 public class MediaUtils {
-    private long duration;//视频时长  毫秒
-    private int height;//高度
-    private int width;//宽度
+    private String duration;//视频时长  毫秒
+    private String height;//高度
+    private String width;//宽度
     private static MediaUtils sMediaUtils;
     private static MediaMetadataRetriever retriever;
     private String title;//文件名
@@ -43,9 +39,9 @@ public class MediaUtils {
         retriever.setDataSource(filePath);
         //设置网络音视频url地址 参数的请求头
         //retriever.setDataSource(filePath,new HashMap<String, String>());
-        duration=Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        width=Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-        height=Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+        duration=retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        width=retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+        height=retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
         title=retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
     }
     /**
@@ -81,13 +77,13 @@ public class MediaUtils {
     }
 
 
-    public long getDuration() {
+    public String getDuration() {
         return duration;
     }
-    public int getHeight() {
+    public String getHeight() {
         return height;
     }
-    public int getWidth() {
+    public String getWidth() {
         return width;
     }
 

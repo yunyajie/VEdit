@@ -3,6 +3,7 @@ package com.example.vedit.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
 import com.example.vedit.Application.MyApplication;
 
 
