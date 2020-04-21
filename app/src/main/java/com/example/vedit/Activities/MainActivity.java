@@ -247,9 +247,9 @@ public class MainActivity extends NoTitleActivity {
             mSelectedVid=Matisse.obtainResult(data);
             Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
             //创建意图对象
-            Intent intent=new Intent(this,TrimActivity.class);
+            Intent intent=new Intent(this,CropActivity.class);
             //传递键值对
-            intent.putExtra("SelectedOneVid",new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
             startActivity(intent);
         }
     }

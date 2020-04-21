@@ -2,6 +2,7 @@ package com.example.vedit.Player;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.widget.ImageView;
@@ -42,6 +43,7 @@ public class MediaManager {
     public void init(Activity activity, Uri videoPath){
     	if (mediaPlayer==null){
     		mediaPlayer=new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		}
     	this.context=activity;
     	this.videoPath=videoPath;

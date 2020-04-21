@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 
 import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
-import com.example.vedit.Player.MediaManager;
 import com.example.vedit.R;
 import com.example.vedit.Utils.OthUtils;
 import com.example.vedit.Widgets.ExecProgressDialog;
@@ -120,11 +119,9 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
     private void initViews() {
         //初始化数据
         Intent intent = getIntent();
-        //videopath=Uri.fromFile(new File(intent.getStringExtra("SelectedOneVid")));
-        Log.e(TAG, intent.getStringExtra("SelectedOneVid"));
         //获取选择的视频
-        videopath = intent.getStringExtra("SelectedOneVid");
-
+        videopath = intent.getStringExtra(FinalConstants.INTENT_SELECTONEVID_KEY);
+        Log.e(TAG, videopath);
         trim_video_seekbar = (VideoSeekBar) findViewById(R.id.trim_video_seekbar);
         ip_surfaceview = (SurfaceView) findViewById(R.id.ip_surfaceview);
         ip_frame = (FrameLayout) findViewById(R.id.ip_frame);
