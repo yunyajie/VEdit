@@ -75,11 +75,11 @@ public class TimerUtils {
                     }
                     // 累积触发次数
                     triggerNumber++;
-                    // 如果大于触发次数,则关闭
-                    if(triggerNumber >= triggerLimit && triggerLimit >= 0){
-                        // 进行关闭
-                        timerOperate(false);
-                    }
+//                    // 如果大于触发次数,则关闭
+//                    if(triggerNumber >= triggerLimit && triggerLimit >= 0){
+//                        // 进行关闭
+//                        timerOperate(false);
+//                    }
                 }
             };
             try {

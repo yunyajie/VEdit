@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -65,6 +66,8 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
 
     private Timer timer;
     private TimerTask timerTask;
+
+    private LinearLayout trim_linearLayout;
 
 
     @Override
@@ -132,6 +135,7 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
         ip_seekbar = (SeekBar) findViewById(R.id.ip_seekbar);
         trim_start = (TextView) findViewById(R.id.trim_start);
         trim_end = (TextView) findViewById(R.id.trim_end);
+        trim_linearLayout=(LinearLayout)findViewById(R.id.trim_linearLayout);
 
         ip_play_igview.setOnClickListener(this);
         ip_seekbar.setOnSeekBarChangeListener(this);
@@ -276,6 +280,8 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
         videoHeight = (int) Math.ceil((float) videoHeight / max);
         //无法直接设置视频尺寸，将计算出的视频尺寸设置到surfaceView让视频自动填充
         ip_surfaceview.setLayoutParams(new FrameLayout.LayoutParams(videoWith, videoHeight));
+//        crop_frameLayout.getLayoutParams().width=videoWith;
+//        crop_frameLayout.getLayoutParams().height=videoHeight;
     }
 
     @Override

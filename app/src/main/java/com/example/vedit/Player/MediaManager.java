@@ -5,10 +5,10 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.view.Window;
 import android.widget.ImageView;
 
 import com.example.vedit.R;
-import com.example.vedit.Utils.MyAdapter;
 
 import java.io.IOException;
 
@@ -30,6 +30,10 @@ public class MediaManager {
 	private Uri videoPath;
 	/** 视频时长  */
 	private int duration;
+	private ImageView ip_play_igview;
+	//当前页面
+	private Window window;
+
 	// --------------------
 	private MediaManager() {}
     public static MediaManager getInstance(){
@@ -47,6 +51,8 @@ public class MediaManager {
 		}
     	this.context=activity;
     	this.videoPath=videoPath;
+    	this.window=activity.getWindow();
+    	ip_play_igview=(ImageView)window.findViewById(R.id.ip_play_igview);
 		try {
 			mediaPlayer.setDataSource(context,videoPath);
 			mediaPlayer.prepare();
@@ -68,6 +74,7 @@ public class MediaManager {
 	public void pause(){
 		if(mediaPlayer != null){
 			mediaPlayer.pause();
+			changePlayerView(false);
 		}
 	}
 	/**
@@ -77,6 +84,7 @@ public class MediaManager {
 		if (mediaPlayer!=null){
 			if (!isPlaying()){
 				mediaPlayer.start();
+				changePlayerView(true);
 			}
 		}
 	}
@@ -91,11 +99,19 @@ public class MediaManager {
 		if (mediaPlayer!=null){
 			if (isPlaying()){
 				mediaPlayer.stop();
+				changePlayerView(false);
 			}
 			mediaPlayer.reset();
 			mediaPlayer.release();
 			mediaPlayer=null;
 		}
+	}
+	/** 获取当前位置  */
+	public int getCurrentPosition(){
+		if (mediaPlayer!=null){
+			return mediaPlayer.getCurrentPosition();
+		}
+		return 0;
 	}
 	/** 循环  */
 	public void loop(){
@@ -104,5 +120,9 @@ public class MediaManager {
 	}
 	public MediaPlayer getMediaPlayer() {
 		return mediaPlayer;
+	}
+	/** 改变播放View  */
+	private void changePlayerView(boolean isPlaying) {
+		ip_play_igview.setImageResource(isPlaying ? R.mipmap.ic_media_stop : R.mipmap.ic_media_play);
 	}
 }

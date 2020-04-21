@@ -5,28 +5,45 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.Player.MediaManager;
 import com.example.vedit.R;
+import com.example.vedit.Utils.OthUtils;
+import com.example.vedit.Utils.TimerUtils;
+import com.example.vedit.Widgets.FrameOverlayView;
 
-public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callback, MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnCompletionListener, View.OnClickListener {
+import java.lang.ref.WeakReference;
 
+public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callback, MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnCompletionListener, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+
+    private final String TAG="CropActivity";
     private SurfaceView ip_surfaceview;
-    private FrameLayout ip_frame;
+    private FrameLayout crop_frameLayout;
     private ImageView ip_play_igview;
     private TextView ip_ctime_tv;
     private TextView ip_ttime_tv;
+    private SeekBar ip_seekbar;
+    private FrameOverlayView crop_FOView;
     private SurfaceHolder surfaceHolder;
     private MediaManager mediaManager;
     private MediaPlayer mediaPlayer;
     private Uri videoPath;
+    //更新UI
+    private Handler myHandler;
+    private TimerUtils timerUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +58,12 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         videoPath=Uri.parse(intent.getStringExtra(FinalConstants.INTENT_SELECTONEVID_KEY));
 
         ip_surfaceview = (SurfaceView) findViewById(R.id.ip_surfaceview);
-        ip_frame = (FrameLayout) findViewById(R.id.ip_frame);
+        crop_frameLayout = (FrameLayout) findViewById(R.id.ip_frame);
         ip_play_igview = (ImageView) findViewById(R.id.ip_play_igview);
         ip_ctime_tv = (TextView) findViewById(R.id.ip_ctime_tv);
         ip_ttime_tv = (TextView) findViewById(R.id.ip_ttime_tv);
+        ip_seekbar=(SeekBar)findViewById(R.id.ip_seekbar);
+        crop_FOView=(FrameOverlayView)findViewById(R.id.crop_FOView);
 
         mediaManager=MediaManager.getInstance();
 
@@ -52,8 +71,13 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         //初始化surfaceholder类，SurfaceView的控制器
         surfaceHolder = ip_surfaceview.getHolder();
         surfaceHolder.addCallback(this);
-
         ip_play_igview.setOnClickListener(this);
+        ip_seekbar.setOnSeekBarChangeListener(this);
+
+        myHandler=new MyHandler(this);
+        timerUtils=new TimerUtils(myHandler);
+        timerUtils.setNotifyWhat(FinalConstants.PROGRESS_CHANGED);
+        timerUtils.setTime(1000,1000);
     }
 
     @Override
@@ -63,6 +87,12 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         mediaPlayer.setOnVideoSizeChangedListener(this);
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setDisplay(surfaceHolder);
+        ip_seekbar.setMax(mediaPlayer.getDuration());
+        //视频总时间
+        ip_ttime_tv.setText(OthUtils.secToTimeRetain(mediaPlayer.getDuration() / 1000));
+        mediaManager.play();
+        //启动定时器
+        timerUtils.startTimer();
     }
 
     @Override
@@ -93,12 +123,11 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         videoHeight = (int) Math.ceil((float) videoHeight / max);
         //无法直接设置视频尺寸，将计算出的视频尺寸设置到surfaceView让视频自动填充
         ip_surfaceview.setLayoutParams(new FrameLayout.LayoutParams(videoWith, videoHeight));
-    }
 
-    private void changePlayerView(boolean isPlaying) {
-        ip_play_igview.setImageResource(isPlaying ? R.mipmap.ic_media_stop : R.mipmap.ic_media_play);
-    }
 
+        crop_frameLayout.getLayoutParams().width=videoWith;
+        crop_frameLayout.getLayoutParams().height=videoHeight;
+    }
     @Override
     public void onCompletion(MediaPlayer mp) {
         mediaManager.loop();
@@ -110,10 +139,8 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
             case R.id.ip_play_igview:
                 if (mediaManager.isPlaying()){
                     mediaManager.pause();
-                    changePlayerView(false);
                 }else {
                     mediaManager.play();
-                    changePlayerView(true);
                 }
                 break;
         }
@@ -122,6 +149,55 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
     @Override
     protected void onDestroy() {
         mediaManager.destory();
+        timerUtils.closeTimer();
         super.onDestroy();
     }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        int process=ip_seekbar.getProgress();
+        mediaManager.seekTo(process);
+        myHandler.sendEmptyMessage(FinalConstants.SEEKBAR_CHANGED);
+    }
+
+    /**
+     * 静态内部类
+     */
+    private static class MyHandler extends Handler {
+        private final WeakReference<CropActivity> mTarget;
+
+        private MyHandler(CropActivity mTarget) {
+            this.mTarget = new WeakReference<CropActivity>(mTarget);
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            CropActivity cropActivity = mTarget.get();
+            if (cropActivity != null) {
+                int currentTime = cropActivity.mediaManager.getCurrentPosition();
+                switch (msg.what) {
+                    case FinalConstants.PROGRESS_CHANGED:
+                        cropActivity.ip_seekbar.setProgress(currentTime);
+                        cropActivity.ip_ctime_tv.setText(OthUtils.secToTimeRetain(currentTime / 1000));
+                        break;
+                    case FinalConstants.SEEKBAR_CHANGED:
+                        cropActivity.ip_seekbar.setProgress(currentTime);
+                        Log.i(cropActivity.TAG, "currentTime" + currentTime + "====" + OthUtils.secToTimeRetain(currentTime / 1000));
+                        cropActivity.ip_ctime_tv.setText(OthUtils.secToTimeRetain(currentTime / 1000));
+                        break;
+                }
+            }
+        }
+    }
+
 }
