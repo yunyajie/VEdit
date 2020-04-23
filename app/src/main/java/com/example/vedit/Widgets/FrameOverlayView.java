@@ -114,7 +114,7 @@ public class FrameOverlayView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.e(TAG,"onDraw");
+        Log.i(TAG,"onDraw");
         //设置当前view的背景色，灰色背景
         int maskColor=Color.argb(180,0,0,0);
         canvas.drawColor(maskColor);

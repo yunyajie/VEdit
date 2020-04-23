@@ -7,7 +7,7 @@ import android.content.Context;
  * @ProjectName: VEdit
  * @Package: com.example.vedit.Widgets
  * @ClassName: ExecProgressDialog
- * @Description: 视频处理对话框
+ * @Description: 视频处理进度弹窗
  * @Author: yunyajie
  * @CreateDate: 2020/4/20 21:13
  * @UpdateUser: 更新者：

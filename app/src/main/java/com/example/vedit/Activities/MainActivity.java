@@ -26,17 +26,25 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
+import com.example.vedit.Utils.EpMediaUtils;
+import com.example.vedit.Utils.FileSelectUtils;
 import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.Item;
 import com.example.vedit.Utils.MyAdapter;
+import com.example.vedit.Utils.OthUtils;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import VideoHandle.EpEditor;
+import VideoHandle.EpVideo;
+import VideoHandle.OnEditorListener;
 
 public class MainActivity extends NoTitleActivity {
     private AlertDialog mPermissionDialog;
@@ -225,10 +233,8 @@ public class MainActivity extends NoTitleActivity {
     }
 
     public void startEdit(View view) {
-        //Intent intent=new Intent(this,EditActivity.class);
-//        Intent intent=new Intent(this,TrimActivity.class);
-//        startActivity(intent);
-        selectOneVid();
+          selectOneVid();
+//        new FileSelectUtils().selectMoreVid(mSelectedVid,MainActivity.this);
     }
 
     @Override
@@ -247,12 +253,19 @@ public class MainActivity extends NoTitleActivity {
             mSelectedVid=Matisse.obtainResult(data);
             Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
             //创建意图对象
-            Intent intent=new Intent(this,CropActivity.class);
+            Intent intent=new Intent(this,TrimActivity.class);
             //传递键值对
             intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
             startActivity(intent);
         }
+        if (requestCode==FinalConstants.REQUEST_CODE_CHOOSEMULTIVID&&resultCode==RESULT_OK){
+            mSelectedVid=Matisse.obtainResult(data);
+            EpMediaUtils epMediaUtils =new EpMediaUtils(this);
+            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+            epMediaUtils.mergeVideos(mSelectedVid);
+        }
     }
+
     //选择一个视频
     public void selectOneVid(){
         if (mSelectedVid!=null) mSelectedVid.clear();
@@ -264,4 +277,5 @@ public class MainActivity extends NoTitleActivity {
                 .imageEngine(new GlideEngine())
                 .forResult(FinalConstants.REQUEST_CODE_CHOOSEONEVID);
     }
+
 }

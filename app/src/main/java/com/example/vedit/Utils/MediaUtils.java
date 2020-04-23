@@ -31,6 +31,7 @@ public class MediaUtils {
             sMediaUtils=new MediaUtils();
             retriever=new MediaMetadataRetriever();
         }
+        if (retriever==null) retriever=new MediaMetadataRetriever();
         return sMediaUtils;
     }
 

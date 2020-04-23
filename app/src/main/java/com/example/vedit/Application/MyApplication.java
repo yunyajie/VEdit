@@ -43,7 +43,7 @@ public class MyApplication extends Application {
 	private void choseSavePath() {
 		//savePath = Environment.getExternalStorageDirectory().getPath() + "/EpMedia/";
 		savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/VEdit/";
-		workPath=savePath+"myworks";
+		workPath=savePath+"myworks/";
 		//Log.i("SD卡是否被挂载",String.valueOf( Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)));
 		File file = new File(savePath);
 		if (!file.exists()) {

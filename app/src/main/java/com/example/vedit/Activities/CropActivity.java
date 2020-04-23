@@ -124,7 +124,6 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         //无法直接设置视频尺寸，将计算出的视频尺寸设置到surfaceView让视频自动填充
         ip_surfaceview.setLayoutParams(new FrameLayout.LayoutParams(videoWith, videoHeight));
 
-
         crop_frameLayout.getLayoutParams().width=videoWith;
         crop_frameLayout.getLayoutParams().height=videoHeight;
     }

@@ -24,6 +24,8 @@ import androidx.annotation.NonNull;
 import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
+import com.example.vedit.Utils.EpMediaUtils;
+import com.example.vedit.Utils.MediaUtils;
 import com.example.vedit.Utils.OthUtils;
 import com.example.vedit.Widgets.ExecProgressDialog;
 import com.example.vedit.Widgets.VideoSeekBar;
@@ -306,9 +308,6 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
                 message.what = FinalConstants.PROGRESS_CHANGED;
                 //更新进度条
                 myHandler.sendMessage(message);
-//                if (mediaPlayer.getCurrentPosition()==mediaPlayer.getDuration()){
-//                    return;
-//                }
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -348,33 +347,37 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
         float startTime = trim_video_seekbar.getStartTime() / 1000;
         float endTime = trim_video_seekbar.getEndTime() / 1000;
         Log.i(TAG, "视频时长剪辑开始：startTime=" + startTime + "----------endTime=" + endTime + "---------duration=" + (endTime - startTime));
-        EpVideo epVideo = new EpVideo(videopath);
-        epVideo.clip(startTime, endTime - startTime);
-        execProgressDialog.ExecStart();
-        final String outPath = MyApplication.getSavePath() + OthUtils.createFileName("VIDEO", "mp4");
-        EpEditor.exec(epVideo, new EpEditor.OutputOption(outPath),
-                new OnEditorListener() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d(TAG, "视频时长剪辑成功");
-                        execProgressDialog.ExecEnd();
-                        //播放视频
-                        Intent v = new Intent(Intent.ACTION_VIEW);
-                        v.setDataAndType(Uri.parse(outPath), "video/mp4");
-                        startActivity(v);
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        execProgressDialog.ExecEnd();
-                        Log.d(TAG, "编辑失败");
-                    }
-
-                    @Override
-                    public void onProgress(float progress) {
-                        execProgressDialog.setProgress(progress);
-                    }
-                });
+        EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+        epMediaUtils.setInputPath(videopath);
+        epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        epMediaUtils.clip(startTime,endTime-startTime);
+//        EpVideo epVideo = new EpVideo(videopath);
+//        epVideo.clip(startTime, endTime - startTime);
+//        execProgressDialog.ExecStart();
+//        final String outPath = MyApplication.getSavePath() + OthUtils.createFileName("VIDEO", "mp4");
+//        EpEditor.exec(epVideo, new EpEditor.OutputOption(outPath),
+//                new OnEditorListener() {
+//                    @Override
+//                    public void onSuccess() {
+//                        Log.d(TAG, "视频时长剪辑成功");
+//                        execProgressDialog.ExecEnd();
+//                        //播放视频
+//                        Intent v = new Intent(Intent.ACTION_VIEW);
+//                        v.setDataAndType(Uri.parse(outPath), "video/mp4");
+//                        startActivity(v);
+//                    }
+//
+//                    @Override
+//                    public void onFailure() {
+//                        execProgressDialog.ExecEnd();
+//                        Log.d(TAG, "编辑失败");
+//                    }
+//
+//                    @Override
+//                    public void onProgress(float progress) {
+//                        execProgressDialog.setProgress(progress);
+//                    }
+//                });
 
     }
 

@@ -21,9 +21,13 @@ public class FinalConstants {
 	public static final int REQUEST_CAPTURE_IMAGE =FINAL_BASE+6;
 	/** 录像码  */
 	public static final int REQUEST_CAPTURE_VIDEO=FINAL_BASE+7;
+	/** 选择不多于5个视频  */
+	public static final int REQUEST_CODE_CHOOSEMULTIVID=FINAL_BASE+8;
 
 
 	/** 选择一个视频的键*/
 	public static final String INTENT_SELECTONEVID_KEY="SelectedOneVid";
+	/** 选择不多于5个的视频  */
+	public static final String INTENT_SELECTMULTIVID_KEY="SelectedMultiVid";
 
 }
