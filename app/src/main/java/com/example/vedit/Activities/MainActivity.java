@@ -30,7 +30,6 @@ import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.example.vedit.Utils.EpMediaUtils;
-import com.example.vedit.Utils.FileSelectUtils;
 import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.Item;
 import com.example.vedit.Utils.MyAdapter;
@@ -42,13 +41,8 @@ import com.zhihu.matisse.engine.impl.GlideEngine;
 import java.util.ArrayList;
 import java.util.List;
 
-import VideoHandle.EpEditor;
-import VideoHandle.EpVideo;
-import VideoHandle.OnEditorListener;
-
 public class MainActivity extends NoTitleActivity {
     private AlertDialog mPermissionDialog;
-    private String mPackName="com.example.vedit";
     private ImageButton ib_camera;
     private ImageButton ib_edit;
     private SwipeMenuListView myWorks_lv;
@@ -208,7 +202,7 @@ public class MainActivity extends NoTitleActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             mPermissionDialog.cancel();
                             //cancelPermissionDialog();
-                            Uri packageURL=Uri.parse("package:"+mPackName);
+                            Uri packageURL=Uri.parse("package:"+FinalConstants.PACKAGE_NAME);
                             Intent intent=new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                                     packageURL);
                             startActivity(intent);
@@ -252,11 +246,15 @@ public class MainActivity extends NoTitleActivity {
         if (requestCode==FinalConstants.REQUEST_CODE_CHOOSEONEVID&&resultCode==RESULT_OK){//选择一个视频
             mSelectedVid=Matisse.obtainResult(data);
             Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
-            //创建意图对象
-            Intent intent=new Intent(this,TrimActivity.class);
-            //传递键值对
-            intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            startActivity(intent);
+            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+            epMediaUtils.addFilter();
+//            //创建意图对象
+//            Intent intent=new Intent(this,TrimActivity.class);
+//            //传递键值对
+//            intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+//            startActivity(intent);
         }
         if (requestCode==FinalConstants.REQUEST_CODE_CHOOSEMULTIVID&&resultCode==RESULT_OK){
             mSelectedVid=Matisse.obtainResult(data);

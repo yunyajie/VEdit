@@ -24,10 +24,17 @@ public class FinalConstants {
 	/** 选择不多于5个视频  */
 	public static final int REQUEST_CODE_CHOOSEMULTIVID=FINAL_BASE+8;
 
+	/** 处理成功  */
+	public static final int EXEC_PROCESSVIDEO_SUCCESS=FINAL_BASE+9;
+	/** 处理失败  */
+	public static final int EXEC_PROCESSVIDEO_FAILE=FINAL_BASE+10;
+
 
 	/** 选择一个视频的键*/
 	public static final String INTENT_SELECTONEVID_KEY="SelectedOneVid";
 	/** 选择不多于5个的视频  */
 	public static final String INTENT_SELECTMULTIVID_KEY="SelectedMultiVid";
+	/** 包名  */
+	public static final String PACKAGE_NAME="com.example.vedit";
 
 }

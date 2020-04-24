@@ -3,7 +3,6 @@ package com.example.vedit.Utils;
 import android.app.Activity;
 import android.net.Uri;
 
-import com.example.vedit.Activities.MainActivity;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.zhihu.matisse.Matisse;

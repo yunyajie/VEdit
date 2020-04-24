@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -25,7 +26,6 @@ import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.example.vedit.Utils.EpMediaUtils;
-import com.example.vedit.Utils.MediaUtils;
 import com.example.vedit.Utils.OthUtils;
 import com.example.vedit.Widgets.ExecProgressDialog;
 import com.example.vedit.Widgets.VideoSeekBar;
@@ -34,10 +34,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import VideoHandle.EpEditor;
-import VideoHandle.EpVideo;
-import VideoHandle.OnEditorListener;
 
 
 public class TrimActivity extends Activity implements SurfaceHolder.Callback, View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnCompletionListener {
@@ -196,6 +192,8 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
             changePlayerView(true);
         } catch (IOException e) {
             Log.i(TAG, "播放视频失败");
+            Toast.makeText(this,"视频文件不存在",Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
@@ -348,7 +346,7 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
         float endTime = trim_video_seekbar.getEndTime() / 1000;
         Log.i(TAG, "视频时长剪辑开始：startTime=" + startTime + "----------endTime=" + endTime + "---------duration=" + (endTime - startTime));
         EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-        epMediaUtils.setInputPath(videopath);
+        epMediaUtils.setInputVideo(videopath);
         epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
         epMediaUtils.clip(startTime,endTime-startTime);
 //        EpVideo epVideo = new EpVideo(videopath);
