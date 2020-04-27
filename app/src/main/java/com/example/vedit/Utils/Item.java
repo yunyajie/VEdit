@@ -1,5 +1,7 @@
 package com.example.vedit.Utils;
 
+import android.graphics.Bitmap;
+
 /**
  * @ProjectName: VEdit
  * @Package: com.example.vedit.Utils
@@ -16,12 +18,20 @@ public class Item {
     private int iconId;
     private String iconName;
 
+    private Bitmap iconBitmap;
+
     public Item() {
     }
 
     public Item(int iconId, String iconName) {
         this.iconId = iconId;
         this.iconName = iconName;
+    }
+
+    /** 另一个方法  */
+    public Item(int iconId,Bitmap iconBitmap){
+        this.iconId=iconId;
+        this.iconBitmap=iconBitmap;
     }
 
     public int getIconId() {
@@ -38,5 +48,13 @@ public class Item {
 
     public void setIconName(String iconName) {
         this.iconName = iconName;
+    }
+
+    public Bitmap getIconBitmap() {
+        return iconBitmap;
+    }
+
+    public void setIconBitmap(Bitmap iconBitmap) {
+        this.iconBitmap = iconBitmap;
     }
 }

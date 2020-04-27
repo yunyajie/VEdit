@@ -2,8 +2,12 @@ package com.example.vedit.Utils;
 
 import android.util.Log;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ProjectName: VEdit
@@ -62,6 +66,31 @@ public class OthUtils {
         }
         Log.d(TAG,result);
         return result;
+    }
+    //获取文件夹下的所有子文件名称
+    public static List<String> getFilesAllName(String path){
+        File file=new File(path);
+        File[]files=file.listFiles();
+        if (files==null){
+            Log.e(TAG,"空目录");
+            return null;
+        }
+        List<String>s=new ArrayList<>();
+        for (int i=0;i<files.length;i++){
+            s.add(files[i].getAbsolutePath());
+        }
+        return s;
+    }
+    //获取文件夹下所有文件
+    public static List<File> getFiles(String path){
+        File file=new File(path);
+        File []files=file.listFiles();
+        if (files==null){
+            Log.e(TAG,"空目录");
+            return null;
+        }
+        List<File> works = new ArrayList<>(Arrays.asList(files));
+        return works;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.vedit.Utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
  * @ProjectName: VEdit
  * @Package: com.example.vedit.Utils
  * @ClassName: MyAdapter
- * @Description: java类作用描述
+ * @Description: 适配器
  * @Author: yunyajie
  * @CreateDate: 2020/3/22 22:09
  * @UpdateUser: 更新者：
@@ -176,6 +177,18 @@ public abstract class MyAdapter<T> extends BaseAdapter {
                 ((ImageView) view).setImageResource(drawableRes);
             } else {
                 view.setBackgroundResource(drawableRes);
+            }
+            return this;
+        }
+
+
+
+        //由yajie修改
+        /** 设置bitmap  */
+        public ViewHolder setImageResource(int id, Bitmap bitmap) {
+            View view = getView(id);
+            if (view instanceof ImageView) {
+                ((ImageView) view).setImageBitmap(bitmap);
             }
             return this;
         }
