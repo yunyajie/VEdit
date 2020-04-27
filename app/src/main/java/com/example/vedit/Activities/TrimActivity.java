@@ -341,6 +341,7 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
 
     //剪辑时长
     public void trimDuration(View view) {
+        trim_video_seekbar.setCutMode(false);
         //获取开始时间和结束时间--单位毫秒
         float startTime = trim_video_seekbar.getStartTime() / 1000;
         float endTime = trim_video_seekbar.getEndTime() / 1000;
@@ -349,33 +350,6 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
         epMediaUtils.setInputVideo(videopath);
         epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
         epMediaUtils.clip(startTime,endTime-startTime);
-//        EpVideo epVideo = new EpVideo(videopath);
-//        epVideo.clip(startTime, endTime - startTime);
-//        execProgressDialog.ExecStart();
-//        final String outPath = MyApplication.getSavePath() + OthUtils.createFileName("VIDEO", "mp4");
-//        EpEditor.exec(epVideo, new EpEditor.OutputOption(outPath),
-//                new OnEditorListener() {
-//                    @Override
-//                    public void onSuccess() {
-//                        Log.d(TAG, "视频时长剪辑成功");
-//                        execProgressDialog.ExecEnd();
-//                        //播放视频
-//                        Intent v = new Intent(Intent.ACTION_VIEW);
-//                        v.setDataAndType(Uri.parse(outPath), "video/mp4");
-//                        startActivity(v);
-//                    }
-//
-//                    @Override
-//                    public void onFailure() {
-//                        execProgressDialog.ExecEnd();
-//                        Log.d(TAG, "编辑失败");
-//                    }
-//
-//                    @Override
-//                    public void onProgress(float progress) {
-//                        execProgressDialog.setProgress(progress);
-//                    }
-//                });
 
     }
 

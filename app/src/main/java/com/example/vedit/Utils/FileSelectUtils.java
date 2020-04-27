@@ -3,7 +3,6 @@ package com.example.vedit.Utils;
 import android.app.Activity;
 import android.net.Uri;
 
-import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -24,19 +23,8 @@ import java.util.List;
  * @Version: 1.0
  */
 public class FileSelectUtils {
-    //选择一个视频
-    public void selectOneVid(List<Uri> mSelectedVid, Activity activity){
-        if (mSelectedVid!=null) mSelectedVid.clear();
-        Matisse.from(activity)
-                .choose(MimeType.ofVideo())
-                .showSingleMediaType(true)
-                .theme(R.style.Matisse_Dracula)
-                .showPreview(true)
-                .imageEngine(new GlideEngine())
-                .forResult(FinalConstants.REQUEST_CODE_CHOOSEONEVID);
-    }
     //选择多个视频  上限为5
-    public void selectMoreVid(List<Uri> mSelectedVid, Activity activity){
+    public void selectMoreVid(List<Uri> mSelectedVid, Activity activity,int REQUESTCODE_SELECTMOREVID){
         if (mSelectedVid!=null) mSelectedVid.clear();
         Matisse.from(activity)
                 .choose(MimeType.ofVideo())
@@ -45,7 +33,18 @@ public class FileSelectUtils {
                 .showPreview(true)
                 .showSingleMediaType(true)
                 .imageEngine(new GlideEngine())
-                .forResult(FinalConstants.REQUEST_CODE_CHOOSEMULTIVID);
+                .forResult(REQUESTCODE_SELECTMOREVID);
 
+    }
+    //选择一个视频
+    public  void selectOneVid(List<Uri> mSelectedVid, Activity activity,int REQUESTCODE_SELECTONEVID){
+        if (mSelectedVid!=null) mSelectedVid.clear();
+        Matisse.from(activity)
+                .choose(MimeType.ofVideo())
+                .showSingleMediaType(true)
+                .theme(R.style.Matisse_Dracula)
+                .showPreview(true)
+                .imageEngine(new GlideEngine())
+                .forResult(REQUESTCODE_SELECTONEVID);
     }
 }

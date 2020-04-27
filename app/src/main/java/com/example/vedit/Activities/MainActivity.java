@@ -14,11 +14,11 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -29,25 +29,25 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
-import com.example.vedit.Utils.EpMediaUtils;
-import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.Item;
 import com.example.vedit.Utils.MyAdapter;
 import com.example.vedit.Utils.OthUtils;
-import com.zhihu.matisse.Matisse;
-import com.zhihu.matisse.MimeType;
-import com.zhihu.matisse.engine.impl.GlideEngine;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends NoTitleActivity {
+    private static String TAG="MainActivity";
+
     private AlertDialog mPermissionDialog;
     private ImageButton ib_camera;
     private ImageButton ib_edit;
     private SwipeMenuListView myWorks_lv;
     private MyAdapter<Item> myAdapter;
     private ArrayList<Item> myWorks;
+
+    private List<File>test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +58,25 @@ public class MainActivity extends NoTitleActivity {
         initWriteExternalPermission();
         myWorks_lv =(SwipeMenuListView)findViewById(R.id.myworks_lv);
         myWorks=new ArrayList<Item>();
-        for (int i=0;i<20;i++){
-            myWorks.add(new Item(R.mipmap.ic_launcher,"测试一下"+i));
+
+        test=OthUtils.getFiles(MyApplication.getWorkPath());
+
+
+
+        Log.i(TAG,"test.size()=="+test.size());
+        //MediaUtils mediaUtils=MediaUtils.getInstance();
+        for (int i = 0; i<test.size(); i++){
+            //mediaUtils.setSource(test.get(i).getPath());
+            myWorks.add(new Item(R.mipmap.ic_launcher,test.get(i).getName()));
+            Log.i(TAG,test.get(i).getName());
         }
 
         myAdapter=new MyAdapter<Item>(myWorks,R.layout.item_mywork) {
             @Override
             public void bindView(ViewHolder holder, Item obj) {
                 holder.setImageResource(R.id.mywork_iv,obj.getIconId());
+                //修改
+                //holder.setImageResource(R.id.mywork_iv,obj.getIconBitmap());
                 holder.setText(R.id.mywork_tv,obj.getIconName());
             }
         };
@@ -82,7 +93,7 @@ public class MainActivity extends NoTitleActivity {
                         0xc9,0xce)));
 
                 renameItem.setWidth(dp2px(90));
-                renameItem.setTitle("Rename");
+                renameItem.setTitle("重命名");
                 renameItem.setTitleColor(Color.WHITE);
                 renameItem.setTitleSize(18);
                 menu.addMenuItem(renameItem);
@@ -101,18 +112,78 @@ public class MainActivity extends NoTitleActivity {
         //step2.listener item click event
         myWorks_lv.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+            public boolean onMenuItemClick(final int position, SwipeMenu menu, int index) {
                 Item item=myWorks.get(position);
                 Log.i("MainActivity","点击了第"+position+"Item");
+                final File file=new File(MyApplication.getWorkPath(),myWorks.get(position).getIconName());
                 switch (index){
                     case 0:
                         //rename
                         Log.i("MainAcivity","重命名第"+position+"个Item");
+                        //重命名对话框
+                        final EditText et=new EditText(MainActivity.this);
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("重命名")
+                                .setView(et)
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String input=et.getText().toString().trim();
+                                        if (input.equals("")){
+                                            Toast.makeText(MainActivity.this,"内容不能为空！",Toast.LENGTH_SHORT).show();
+                                        }else {
+                                            File temp=new File(MyApplication.getWorkPath(),input+".mp4");
+                                            if (temp.exists()){
+                                                Toast.makeText(MainActivity.this,"文件名："+input+"已存在",Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG,"文件名已存在");
+                                            }else {
+                                                if (file.renameTo(new File(MyApplication.getWorkPath(),input+".mp4"))){
+                                                    myWorks.get(position).setIconName(input+".mp4");
+                                                    Toast.makeText(MainActivity.this,"重命名成功",Toast.LENGTH_SHORT).show();
+                                                    Log.i(TAG,"改名为："+input);
+                                                }else {
+                                                    Toast.makeText(MainActivity.this,"重命名失败",Toast.LENGTH_SHORT).show();
+                                                    Log.i(TAG,"重命名失败");
+                                                }
+                                            }
+                                        }
+                                    }
+                                })
+                                .setCancelable(false)
+                                .setNegativeButton("取消",null)
+                                .show();
+                        //更新列表
+                        myAdapter.notifyDataSetChanged();
+                        //file.renameTo(new File(MyApplication.getWorkPath(),"重命名.mp4"));
                         break;
                     case 1:
                         //delete
                         Log.i("MainAcivity","删除第"+position+"个Item");
-                        myWorks.remove(position);
+                        if (file.exists()){//文件存在可以删除
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setCancelable(false)
+                                    .setTitle("确认删除？")
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            if (file.delete()) {
+                                                Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_SHORT).show();
+                                                myWorks.remove(position);
+                                                myAdapter.notifyDataSetChanged();
+                                                Log.i(TAG,"删除文件："+file.getName());
+                                            }else {
+                                                Toast.makeText(MainActivity.this,"删除失败",Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    })
+                                    .setNegativeButton("取消",null)
+                                    .show();
+                        }else {//文件不存在
+                            Toast.makeText(MainActivity.this,"文件不存在",Toast.LENGTH_SHORT).show();
+                            myWorks.remove(position);
+                        }
+                        Log.i(TAG,"myWorks.size()=="+myWorks.size());
                         myAdapter.notifyDataSetChanged();
                         break;
                 }
@@ -124,11 +195,13 @@ public class MainActivity extends NoTitleActivity {
             @Override
             public void onSwipeStart(int position) {
                 //swipe start
+                Toast.makeText(MainActivity.this,"长按播放",Toast.LENGTH_SHORT).show();
                 Log.i("MainActivity","滑动开始");
             }
 
             @Override
             public void onSwipeEnd(int position) {
+                Toast.makeText(MainActivity.this,"长按播放",Toast.LENGTH_SHORT).show();
                //swipe end
                 Log.i("MainActivity","滑动结束");
             }
@@ -151,8 +224,12 @@ public class MainActivity extends NoTitleActivity {
         myWorks_lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(),position+"long click",
-                        Toast.LENGTH_LONG).show();
+                String outPath=MyApplication.getWorkPath()+myWorks.get(position).getIconName();
+                Log.i(TAG,"播放:"+outPath);
+                Intent v=new Intent(Intent.ACTION_VIEW);
+                v.setDataAndType(Uri.parse(outPath),"video/mp4");
+                startActivity(v);
+                //长按
                 return false;
             }
         });
@@ -227,8 +304,8 @@ public class MainActivity extends NoTitleActivity {
     }
 
     public void startEdit(View view) {
-          selectOneVid();
-//        new FileSelectUtils().selectMoreVid(mSelectedVid,MainActivity.this);
+          Intent intent=new Intent(MainActivity.this,ActionsActivity.class);
+          startActivity(intent);
     }
 
     @Override
@@ -236,44 +313,5 @@ public class MainActivity extends NoTitleActivity {
         moveTaskToBack(true);
     }
 
-    List<Uri>mSelectedPic;
-    List<Uri>mSelectedVid;
-    private static String TAG="MainActivity";
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==FinalConstants.REQUEST_CODE_CHOOSEONEVID&&resultCode==RESULT_OK){//选择一个视频
-            mSelectedVid=Matisse.obtainResult(data);
-            Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
-            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
-            epMediaUtils.addFilter();
-//            //创建意图对象
-//            Intent intent=new Intent(this,TrimActivity.class);
-//            //传递键值对
-//            intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-//            startActivity(intent);
-        }
-        if (requestCode==FinalConstants.REQUEST_CODE_CHOOSEMULTIVID&&resultCode==RESULT_OK){
-            mSelectedVid=Matisse.obtainResult(data);
-            EpMediaUtils epMediaUtils =new EpMediaUtils(this);
-            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
-            epMediaUtils.mergeVideos(mSelectedVid);
-        }
-    }
-
-    //选择一个视频
-    public void selectOneVid(){
-        if (mSelectedVid!=null) mSelectedVid.clear();
-        Matisse.from(MainActivity.this)
-                .choose(MimeType.ofVideo())
-                .showSingleMediaType(true)
-                .theme(R.style.Matisse_Dracula)
-                .showPreview(true)
-                .imageEngine(new GlideEngine())
-                .forResult(FinalConstants.REQUEST_CODE_CHOOSEONEVID);
-    }
 
 }

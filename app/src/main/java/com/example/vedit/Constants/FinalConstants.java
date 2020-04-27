@@ -28,6 +28,12 @@ public class FinalConstants {
 	public static final int EXEC_PROCESSVIDEO_SUCCESS=FINAL_BASE+9;
 	/** 处理失败  */
 	public static final int EXEC_PROCESSVIDEO_FAILE=FINAL_BASE+10;
+	/** 时长剪辑  */
+	public static final int REQUESTCODE_SELECTVID_TRIM=FINAL_BASE+11;
+	/** 尺寸裁剪  */
+	public static final int REQUESTCODE_SELECTVID_CROP=FINAL_BASE+12;
+	/** 合并视频  */
+	public static final int REQUESTCODE_SELECTMOREVID_MERGE=FINAL_BASE+13;
 
 
 	/** 选择一个视频的键*/

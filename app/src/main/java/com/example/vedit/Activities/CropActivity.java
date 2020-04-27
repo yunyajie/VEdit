@@ -93,6 +93,7 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         mediaManager.play();
         //启动定时器
         timerUtils.startTimer();
+
     }
 
     @Override

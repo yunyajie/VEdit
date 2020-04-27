@@ -64,6 +64,8 @@ public class MyApplication extends Application {
 		return savePath;
 	}
 	public static String getWorkPath(){return workPath;}
+	/** 获取字体文件路径  */
+	public static String getTTFPath(){return savePath+"/msyh.ttf";}
 
 	/**
 	 * 从assets目录中复制文件到本地
