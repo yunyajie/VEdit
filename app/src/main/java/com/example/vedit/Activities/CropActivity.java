@@ -2,6 +2,7 @@ package com.example.vedit.Activities;
 
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -18,9 +21,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.Player.MediaManager;
 import com.example.vedit.R;
+import com.example.vedit.Utils.EpMediaUtils;
 import com.example.vedit.Utils.OthUtils;
 import com.example.vedit.Utils.TimerUtils;
 import com.example.vedit.Widgets.FrameOverlayView;
@@ -38,6 +43,7 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
     private SeekBar ip_seekbar;
     private FrameOverlayView crop_FOView;
     private SurfaceHolder surfaceHolder;
+    private Button bt_cropInfo;
     private MediaManager mediaManager;
     private MediaPlayer mediaPlayer;
     private Uri videoPath;
@@ -64,6 +70,7 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         ip_ttime_tv = (TextView) findViewById(R.id.ip_ttime_tv);
         ip_seekbar=(SeekBar)findViewById(R.id.ip_seekbar);
         crop_FOView=(FrameOverlayView)findViewById(R.id.crop_FOView);
+        bt_cropInfo=(Button)findViewById(R.id.bt_cropInfo);
 
         mediaManager=MediaManager.getInstance();
 
@@ -73,6 +80,7 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         surfaceHolder.addCallback(this);
         ip_play_igview.setOnClickListener(this);
         ip_seekbar.setOnSeekBarChangeListener(this);
+        bt_cropInfo.setOnClickListener(this);
 
         myHandler=new MyHandler(this);
         timerUtils=new TimerUtils(myHandler);
@@ -127,6 +135,11 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
 
         crop_frameLayout.getLayoutParams().width=videoWith;
         crop_frameLayout.getLayoutParams().height=videoHeight;
+
+        ViewGroup.LayoutParams layoutParams=crop_FOView.getLayoutParams();
+        layoutParams.height=videoHeight;
+        layoutParams.width=videoWith;
+        crop_FOView.setLayoutParams(layoutParams);
     }
     @Override
     public void onCompletion(MediaPlayer mp) {
@@ -143,7 +156,30 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
                     mediaManager.play();
                 }
                 break;
+            case R.id.bt_cropInfo:
+                //获取裁剪信息并执行裁剪命令
+                crop();
         }
+    }
+
+    //获取裁剪信息并裁减
+    private void crop() {
+        Rect frameRect=crop_FOView.getFrameRect();
+        Log.e(TAG,"frameRect.width()="+frameRect.width()+":"+"frameRect.height()="+frameRect.height()+":"+frameRect.left+":"+frameRect.right+":"+frameRect.top+":"+frameRect.bottom);
+        Rect parentRect=crop_FOView.getParentInfo();
+        Log.e(TAG,"parentRect.width()="+parentRect.width()+":"+"parentRect.height()="+parentRect.height());
+        //视频真实宽高
+        int Vwith=mediaPlayer.getVideoWidth();
+        int Vheight=mediaPlayer.getVideoHeight();
+        float videoWidth=((float)frameRect.width()/parentRect.width())*Vwith;
+        float videoHeight=((float)frameRect.height()/parentRect.height())*Vheight;
+        float x=((float)frameRect.left/parentRect.width())*Vwith;
+        float y=((float) frameRect.top/parentRect.height())*Vheight;
+        Log.e(TAG,"视频尺寸裁剪-----原视频:宽="+Vwith+"-----高="+Vheight+"--------裁剪视频范围:宽="+videoWidth+"----高="+videoHeight+"---x="+x+"---y="+y);
+        EpMediaUtils epMediaUtils=new EpMediaUtils(CropActivity.this);
+        epMediaUtils.setInputVideo(videoPath.getPath());
+        epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        epMediaUtils.crop(videoWidth,videoHeight,x,y);
     }
 
     @Override

@@ -95,13 +95,21 @@ public class FrameOverlayView extends View {
         cornerLineWidth=DimensionUtil.dpTopx(3);
     }
 
+
+    //记录控件的高度和宽度
+    int parentW=0,parentH=0;
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         Log.e(TAG,w+":"+h+":"+oldw+":"+oldh);
+        //修改控件宽高
+        parentW=w;
+        parentH=h;
         //当前控件初始化的时候，会调用一次这个函数，此时初始化边框矩形
         initFrameRect(w,h);
     }
+
 
     //初始化边框矩形
     private void initFrameRect(int w, int h) {
@@ -114,7 +122,6 @@ public class FrameOverlayView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.i(TAG,"onDraw");
         //设置当前view的背景色，灰色背景
         int maskColor=Color.argb(180,0,0,0);
         canvas.drawColor(maskColor);
@@ -261,6 +268,15 @@ public class FrameOverlayView extends View {
         rect.top=(int)frameRect.top;
         rect.right=(int)frameRect.right;
         rect.bottom=(int)frameRect.bottom;
+        return rect;
+    }
+
+    public Rect getParentInfo(){
+        Rect rect=new Rect();
+        rect.top=0;
+        rect.left=0;
+        rect.bottom=parentH;
+        rect.right=parentW;
         return rect;
     }
 

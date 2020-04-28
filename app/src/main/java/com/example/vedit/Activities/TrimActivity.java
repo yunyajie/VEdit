@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -280,8 +281,11 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
         videoHeight = (int) Math.ceil((float) videoHeight / max);
         //无法直接设置视频尺寸，将计算出的视频尺寸设置到surfaceView让视频自动填充
         ip_surfaceview.setLayoutParams(new FrameLayout.LayoutParams(videoWith, videoHeight));
-//        crop_frameLayout.getLayoutParams().width=videoWith;
-//        crop_frameLayout.getLayoutParams().height=videoHeight;
+
+        ViewGroup.LayoutParams lp=trim_linearLayout.getLayoutParams();
+        lp.height=videoHeight;
+        lp.width=videoWith;
+        trim_linearLayout.setLayoutParams(lp);
     }
 
     @Override
