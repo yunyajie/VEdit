@@ -457,5 +457,8 @@ public  class EpMediaUtils {
     public void setInputVideo(String inputVideo) {
         this.inputVideo = inputVideo;
     }
-    
+
+    public void setInputPhoto(String inputPhoto) { this.inputPhoto = inputPhoto; }
+
+    public void setInputAudio(String inputAudio) { this.inputAudio = inputAudio; }
 }

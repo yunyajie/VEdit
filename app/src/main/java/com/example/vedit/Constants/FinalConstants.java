@@ -21,9 +21,8 @@ public class FinalConstants {
 	public static final int REQUEST_CAPTURE_IMAGE =FINAL_BASE+6;
 	/** 录像码  */
 	public static final int REQUEST_CAPTURE_VIDEO=FINAL_BASE+7;
-	/** 选择不多于5个视频  */
-	public static final int REQUEST_CODE_CHOOSEMULTIVID=FINAL_BASE+8;
-
+	/** 合并视频  */
+	public static final int REQUESTCODE_SELECTMOREVID_MERGE=FINAL_BASE+8;
 	/** 处理成功  */
 	public static final int EXEC_PROCESSVIDEO_SUCCESS=FINAL_BASE+9;
 	/** 处理失败  */
@@ -32,9 +31,14 @@ public class FinalConstants {
 	public static final int REQUESTCODE_SELECTVID_TRIM=FINAL_BASE+11;
 	/** 尺寸裁剪  */
 	public static final int REQUESTCODE_SELECTVID_CROP=FINAL_BASE+12;
-	/** 合并视频  */
-	public static final int REQUESTCODE_SELECTMOREVID_MERGE=FINAL_BASE+13;
-
+	/** 获取背景音乐  */
+	public static final int REQUESTCODE_SELECTVID_GETBGM=FINAL_BASE+13;
+	/** 添加背景音乐  */
+	public static final int REQUESTCODE_SELECTVID_ADDBGM=FINAL_BASE+14;
+	/** 视频转图片  */
+	public static final int REQUESTCODE_SELECTVID_V2P=FINAL_BASE+15;
+	/** 选择音频  */
+	public static final int REQUESTCODE_SELECTAUD_ADDBGM=FINAL_BASE+16;
 
 	/** 选择一个视频的键*/
 	public static final String INTENT_SELECTONEVID_KEY="SelectedOneVid";

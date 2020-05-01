@@ -26,6 +26,8 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     private Button bt_actions2;
     private Button bt_actions3;
     private Button bt_actions4;
+    private Button bt_actions5;
+    private Button bt_actions6;
     List<Uri> mSelectedVid;
     private static String TAG="ActionsActivity";
 
@@ -42,11 +44,16 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
         bt_actions2=(Button)findViewById(R.id.bt_actions2);
         bt_actions3=(Button)findViewById(R.id.bt_actions3);
         bt_actions4=(Button)findViewById(R.id.bt_actions4);
+        bt_actions5=(Button)findViewById(R.id.bt_actions5);
+        bt_actions6=(Button)findViewById(R.id.bt_actions6);
+
 
         bt_actions1.setOnClickListener(this);
         bt_actions2.setOnClickListener(this);
         bt_actions3.setOnClickListener(this);
         bt_actions4.setOnClickListener(this);
+        bt_actions5.setOnClickListener(this);
+        bt_actions6.setOnClickListener(this);
     }
 
     @Override
@@ -61,10 +68,22 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_CROP);
                 break;
             case R.id.bt_actions3:
+                //获取背景音乐
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_GETBGM);
                 break;
             case R.id.bt_actions4:
                 //合并视频
                 new FileSelectUtils().selectMoreVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTMOREVID_MERGE);
+                break;
+            case R.id.bt_actions5:
+                //添加BGM
+                Log.i(TAG,"添加BGM");
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_ADDBGM);
+                break;
+            case R.id.bt_actions6:
+                //视频转图片
+                Log.i(TAG,"视频转图片");
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_V2P);
                 break;
         }
     }
@@ -98,6 +117,39 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
             EpMediaUtils epMediaUtils =new EpMediaUtils(this);
             epMediaUtils.setOutputPath(MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4"));
             epMediaUtils.mergeVideos(mSelectedVid);
+        }
+        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_GETBGM&&resultCode==RESULT_OK){
+            //获取BGM
+            mSelectedVid=Matisse.obtainResult(data);
+            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("AUDIO","mp3"));
+            epMediaUtils.demuxerBGM();
+        }
+        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_ADDBGM&&resultCode==RESULT_OK){
+            //添加BGM
+            mSelectedVid=Matisse.obtainResult(data);
+            Intent intent=new Intent();
+            intent.setType("audio/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(intent,FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM);
+
+
+
+            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            //epMediaUtils.setInputAudio();
+            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+            epMediaUtils.music(0,1);
+        }
+        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_V2P&&resultCode==RESULT_OK){
+            //视频转图片
+            mSelectedVid=Matisse.obtainResult(data);
+            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("PIC","jpg"));
+            epMediaUtils.video2pic(1048,720,30);
         }
     }
 }
