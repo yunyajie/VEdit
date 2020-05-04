@@ -39,6 +39,8 @@ public class FinalConstants {
 	public static final int REQUESTCODE_SELECTVID_V2P=FINAL_BASE+15;
 	/** 选择音频  */
 	public static final int REQUESTCODE_SELECTAUD_ADDBGM=FINAL_BASE+16;
+	/** 倒放  */
+	public static final int REQUESTCODE_SELECTVID_REVERSE=FINAL_BASE+17;
 
 	/** 选择一个视频的键*/
 	public static final String INTENT_SELECTONEVID_KEY="SelectedOneVid";

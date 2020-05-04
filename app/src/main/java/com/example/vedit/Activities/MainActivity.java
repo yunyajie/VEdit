@@ -186,6 +186,8 @@ public class MainActivity extends NoTitleActivity {
                         Log.i(TAG,"myWorks.size()=="+myWorks.size());
                         myAdapter.notifyDataSetChanged();
                         break;
+                        default:
+                            break;
                 }
                 return false;
             }
@@ -265,6 +267,8 @@ public class MainActivity extends NoTitleActivity {
                     showPermissionDialog();
                 }
                 break;
+                default:
+                    break;
         }
 
     }

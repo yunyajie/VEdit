@@ -351,12 +351,15 @@ public  class EpMediaUtils {
      * 输入参数为视频列表
      */
     public void mergeVideos(List<Uri> mSelectedVid) {
-        if (mSelectedVid.size()<=1){//合并视频时进选择了一个视频
+        if (mSelectedVid.size()<=1){
+            //合并视频时进选择了一个视频
             epMediaUtilsHandler.sendEmptyMessage(FinalConstants.REQUEST_CODE_CHOOSEONEVID);
             return;
         }
         ArrayList<EpVideo> epVideos=new ArrayList<>();
-        for (Uri temp:mSelectedVid) epVideos.add(new EpVideo(new FileUtils(context).getFilePathByUri(temp)));
+        for (Uri temp:mSelectedVid) {
+            epVideos.add(new EpVideo(new FileUtils(context).getFilePathByUri(temp)));
+        }
         //输出选项，参数为输出文件路径
         EpEditor.OutputOption outputOption=new EpEditor.OutputOption(MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4"));
         //设置视频宽高为第一个视频的宽高
@@ -405,6 +408,8 @@ public  class EpMediaUtils {
                 case FinalConstants.REQUEST_CODE_CHOOSEONEVID:
                     Toast.makeText(context,"请选择一个以上的视频进行合并",Toast.LENGTH_SHORT).show();
                     break;
+                    default:
+                        break;
             }
         }
     }

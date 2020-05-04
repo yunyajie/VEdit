@@ -28,6 +28,12 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     private Button bt_actions4;
     private Button bt_actions5;
     private Button bt_actions6;
+    private Button bt_actions7;
+    private Button bt_actions8;
+    private Button bt_actions9;
+    private Button bt_actions10;
+    private Button bt_actions11;
+    private Button bt_actions12;
     List<Uri> mSelectedVid;
     private static String TAG="ActionsActivity";
 
@@ -46,6 +52,12 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
         bt_actions4=(Button)findViewById(R.id.bt_actions4);
         bt_actions5=(Button)findViewById(R.id.bt_actions5);
         bt_actions6=(Button)findViewById(R.id.bt_actions6);
+        bt_actions7=(Button)findViewById(R.id.bt_actions7);
+        bt_actions8=(Button)findViewById(R.id.bt_actions8);
+        bt_actions9=(Button)findViewById(R.id.bt_actions9);
+        bt_actions10=(Button)findViewById(R.id.bt_actions10);
+        bt_actions11=(Button)findViewById(R.id.bt_actions11);
+        bt_actions12=(Button)findViewById(R.id.bt_actions12);
 
 
         bt_actions1.setOnClickListener(this);
@@ -54,6 +66,12 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
         bt_actions4.setOnClickListener(this);
         bt_actions5.setOnClickListener(this);
         bt_actions6.setOnClickListener(this);
+        bt_actions7.setOnClickListener(this);
+        bt_actions8.setOnClickListener(this);
+        bt_actions9.setOnClickListener(this);
+        bt_actions10.setOnClickListener(this);
+        bt_actions11.setOnClickListener(this);
+        bt_actions12.setOnClickListener(this);
     }
 
     @Override
@@ -85,6 +103,27 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 Log.i(TAG,"视频转图片");
                 new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_V2P);
                 break;
+            case R.id.bt_actions7:
+                //旋转和镜像
+                break;
+            case R.id.bt_actions8:
+                //倍速
+                break;
+            case R.id.bt_actions9:
+                //图片水印
+                break;
+            case R.id.bt_actions10:
+                //文字水印
+                break;
+            case R.id.bt_actions11:
+                //时间水印
+                break;
+            case R.id.bt_actions12:
+                //倒放
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_REVERSE);
+                break;
+                default:
+                    break;
         }
     }
 
@@ -150,6 +189,14 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
             epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
             epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("PIC","jpg"));
             epMediaUtils.video2pic(1048,720,30);
+        }
+        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_REVERSE&&resultCode==RESULT_OK){
+            //倒放
+            mSelectedVid=Matisse.obtainResult(data);
+            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+            epMediaUtils.reverse(true,false);
         }
     }
 }
