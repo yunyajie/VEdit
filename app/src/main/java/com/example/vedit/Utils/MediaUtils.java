@@ -71,6 +71,10 @@ public class MediaUtils {
         }
         return null;
     }
+    /** 获取视频文件截图  */
+    public  Bitmap getVideoThumb(){
+        return retriever.getFrameAtTime();
+    }
 
     public void RetrieverRelease(){
         //当一个对象完成时调用，用于释放内存内部分配的内存

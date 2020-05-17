@@ -30,6 +30,7 @@ import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.example.vedit.Utils.Item;
+import com.example.vedit.Utils.MediaUtils;
 import com.example.vedit.Utils.MyAdapter;
 import com.example.vedit.Utils.OthUtils;
 
@@ -64,19 +65,19 @@ public class MainActivity extends NoTitleActivity {
 
 
         Log.i(TAG,"test.size()=="+test.size());
-        //MediaUtils mediaUtils=MediaUtils.getInstance();
+        MediaUtils mediaUtils=MediaUtils.getInstance();
         for (int i = 0; i<test.size(); i++){
-            //mediaUtils.setSource(test.get(i).getPath());
-            myWorks.add(new Item(R.mipmap.ic_launcher,test.get(i).getName()));
+            mediaUtils.setSource(test.get(i).getPath());
+            myWorks.add(new Item(mediaUtils.getVideoThumb(),test.get(i).getName()));
             Log.i(TAG,test.get(i).getName());
         }
 
-        myAdapter=new MyAdapter<Item>(myWorks,R.layout.item_mywork) {
+        myAdapter=new MyAdapter<Item>(myWorks,R.layout.mywork_item) {
             @Override
             public void bindView(ViewHolder holder, Item obj) {
-                holder.setImageResource(R.id.mywork_iv,obj.getIconId());
+                //holder.setImageResource(R.id.mywork_iv,obj.getIconId());
                 //修改
-                //holder.setImageResource(R.id.mywork_iv,obj.getIconBitmap());
+                holder.setImageResource(R.id.mywork_iv,obj.getIconBitmap());
                 holder.setText(R.id.mywork_tv,obj.getIconName());
             }
         };
@@ -91,7 +92,6 @@ public class MainActivity extends NoTitleActivity {
                         getApplicationContext());
                 renameItem.setBackground(new ColorDrawable(Color.rgb(0xc9,
                         0xc9,0xce)));
-
                 renameItem.setWidth(dp2px(90));
                 renameItem.setTitle("重命名");
                 renameItem.setTitleColor(Color.WHITE);
@@ -203,7 +203,7 @@ public class MainActivity extends NoTitleActivity {
 
             @Override
             public void onSwipeEnd(int position) {
-                Toast.makeText(MainActivity.this,"长按播放",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this,"长按播放",Toast.LENGTH_SHORT).show();
                //swipe end
                 Log.i("MainActivity","滑动结束");
             }

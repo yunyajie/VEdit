@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.vedit">
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -44,6 +45,7 @@
             android:screenOrientation="portrait" />
 
         <provider
+            tools:replace="android:authorities"
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.vedit.fileprovider"
             android:exported="false"

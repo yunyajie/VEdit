@@ -16,9 +16,13 @@ import com.example.vedit.Utils.EpMediaUtils;
 import com.example.vedit.Utils.FileSelectUtils;
 import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.OthUtils;
+import com.vincent.filepicker.Constant;
+import com.vincent.filepicker.activity.AudioPickActivity;
 import com.zhihu.matisse.Matisse;
 
 import java.util.List;
+
+import static com.vincent.filepicker.activity.AudioPickActivity.IS_NEED_RECORDER;
 
 public class ActionsActivity extends NoTitleActivity implements View.OnClickListener {
 
@@ -114,6 +118,10 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 break;
             case R.id.bt_actions10:
                 //文字水印
+                Intent intent=new Intent(this, AudioPickActivity.class);
+                intent.putExtra(IS_NEED_RECORDER,true);
+                intent.putExtra(Constant.MAX_NUMBER,1);
+                startActivityForResult(intent,Constant.REQUEST_CODE_PICK_AUDIO);
                 break;
             case R.id.bt_actions11:
                 //时间水印
@@ -130,73 +138,77 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_TRIM&&resultCode==RESULT_OK){
-            //时长剪辑
-            mSelectedVid= Matisse.obtainResult(data);
-            Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
-            //创建意图对象
-            Intent intent=new Intent(this,TrimActivity.class);
-            //传递键值对
-            intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            startActivity(intent);
-        }
-        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_CROP&&resultCode==RESULT_OK){
-            //时长裁剪
-            mSelectedVid= Matisse.obtainResult(data);
-            Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
-            //创建意图对象
-            Intent intent=new Intent(this,CropActivity.class);
-            //传递键值对
-            intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            startActivity(intent);
-        }
-        if (requestCode==FinalConstants.REQUESTCODE_SELECTMOREVID_MERGE&&resultCode==RESULT_OK){
-            //视频合并
-            mSelectedVid=Matisse.obtainResult(data);
-            EpMediaUtils epMediaUtils =new EpMediaUtils(this);
-            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4"));
-            epMediaUtils.mergeVideos(mSelectedVid);
-        }
-        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_GETBGM&&resultCode==RESULT_OK){
-            //获取BGM
-            mSelectedVid=Matisse.obtainResult(data);
-            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("AUDIO","mp3"));
-            epMediaUtils.demuxerBGM();
-        }
-        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_ADDBGM&&resultCode==RESULT_OK){
-            //添加BGM
-            mSelectedVid=Matisse.obtainResult(data);
-            Intent intent=new Intent();
-            intent.setType("audio/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            startActivityForResult(intent,FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM);
+        if(resultCode==RESULT_OK){
+            switch (requestCode){
+                case FinalConstants.REQUESTCODE_SELECTVID_TRIM:
+                    //时长剪辑
+                    mSelectedVid= Matisse.obtainResult(data);
+                    Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
+                    //创建意图对象
+                    Intent intent=new Intent(this,TrimActivity.class);
+                    //传递键值对
+                    intent.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    startActivity(intent);
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_CROP:
+                    //时长裁剪
+                    mSelectedVid= Matisse.obtainResult(data);
+                    Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
+                    //创建意图对象
+                    Intent intent1=new Intent(this,CropActivity.class);
+                    //传递键值对
+                    intent1.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    startActivity(intent1);
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTMOREVID_MERGE:
+                    //视频合并
+                    mSelectedVid=Matisse.obtainResult(data);
+                    EpMediaUtils epMediaUtils =new EpMediaUtils(this);
+                    epMediaUtils.setOutputPath(MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4"));
+                    epMediaUtils.mergeVideos(mSelectedVid);
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_GETBGM:
+                    //获取BGM
+                    mSelectedVid=Matisse.obtainResult(data);
+                    EpMediaUtils epMediaUtils1=new EpMediaUtils(this);
+                    epMediaUtils1.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    epMediaUtils1.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("AUDIO","mp3"));
+                    epMediaUtils1.demuxerBGM();
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_ADDBGM:
+                    //添加BGM
+                    mSelectedVid=Matisse.obtainResult(data);
+                    Intent intent2=new Intent();
+                    intent2.setType("audio/*");
+                    intent2.setAction(Intent.ACTION_GET_CONTENT);
+                    intent2.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent2,FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM);
 
 
 
-            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            //epMediaUtils.setInputAudio();
-            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
-            epMediaUtils.music(0,1);
+                    EpMediaUtils epMediaUtils2=new EpMediaUtils(this);
+                    epMediaUtils2.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    //epMediaUtils.setInputAudio();
+                    epMediaUtils2.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+                    epMediaUtils2.music(0,1);
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_REVERSE:
+                    //倒放
+                    mSelectedVid=Matisse.obtainResult(data);
+                    EpMediaUtils epMediaUtils3=new EpMediaUtils(this);
+                    epMediaUtils3.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    epMediaUtils3.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+                    epMediaUtils3.reverse(true,false);
+                    break;
+            }
         }
-        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_V2P&&resultCode==RESULT_OK){
-            //视频转图片
-            mSelectedVid=Matisse.obtainResult(data);
-            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("PIC","jpg"));
-            epMediaUtils.video2pic(1048,720,30);
-        }
-        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_REVERSE&&resultCode==RESULT_OK){
-            //倒放
-            mSelectedVid=Matisse.obtainResult(data);
-            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
-            epMediaUtils.reverse(true,false);
-        }
-    }
+//        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_V2P&&resultCode==RESULT_OK){
+//            //视频转图片
+//            mSelectedVid=Matisse.obtainResult(data);
+//            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+//            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+//            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("PIC","jpg"));
+//            epMediaUtils.video2pic(1048,720,30);
+//        }
+      }
 }

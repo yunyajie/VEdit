@@ -28,11 +28,16 @@ public class Item {
         this.iconName = iconName;
     }
 
-    /** 另一个方法  */
-    public Item(int iconId,Bitmap iconBitmap){
-        this.iconId=iconId;
-        this.iconBitmap=iconBitmap;
+    public Item(Bitmap iconBitmap, String iconName) {
+        this.iconBitmap = iconBitmap;
+        this.iconName = iconName;
     }
+
+//    /** 另一个方法  */
+//    public Item(int iconId,Bitmap iconBitmap){
+//        this.iconId=iconId;
+//        this.iconBitmap=iconBitmap;
+//    }
 
     public int getIconId() {
         return iconId;
