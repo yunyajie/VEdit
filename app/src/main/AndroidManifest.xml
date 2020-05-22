@@ -15,10 +15,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.ActionsActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".Activities.CropActivity"
-            android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.AddBGMActivity"></activity>
+        <activity
+            android:name=".Activities.ActionsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.CropActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".Activities.NoTitleActivity" />
         <activity
             android:name=".Activities.TrimActivity"
@@ -45,11 +48,11 @@
             android:screenOrientation="portrait" />
 
         <provider
-            tools:replace="android:authorities"
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.vedit.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />

@@ -52,12 +52,12 @@
         android:gravity="center"
         android:orientation="horizontal"
         >
-
         <Button
             android:id="@+id/bt_cropInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="裁剪" />
+            android:background="@drawable/skipshape"
+            android:textColor="@color/blue"
+            android:text="@string/OK" />
     </LinearLayout>
 </LinearLayout>

@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
+import com.ess.filepicker.FilePicker;
+import com.ess.filepicker.model.EssFile;
 import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
@@ -118,10 +122,17 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 break;
             case R.id.bt_actions10:
                 //文字水印
-                Intent intent=new Intent(this, AudioPickActivity.class);
-                intent.putExtra(IS_NEED_RECORDER,true);
-                intent.putExtra(Constant.MAX_NUMBER,1);
-                startActivityForResult(intent,Constant.REQUEST_CODE_PICK_AUDIO);
+//                Intent intent=new Intent(this, AudioPickActivity.class);
+//                intent.putExtra(IS_NEED_RECORDER,true);
+//                intent.putExtra(Constant.MAX_NUMBER,1);
+//                startActivityForResult(intent,Constant.REQUEST_CODE_PICK_AUDIO);
+
+                FilePicker.from(ActionsActivity.this)
+                        .chooseForMimeType()
+                        .isSingle()
+                        .setFileTypes("mp3")
+                        .requestCode(FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM)
+                        .start();
                 break;
             case R.id.bt_actions11:
                 //时间水印
@@ -139,6 +150,7 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK){
+            EpMediaUtils epMediaUtils =new EpMediaUtils(this);
             switch (requestCode){
                 case FinalConstants.REQUESTCODE_SELECTVID_TRIM:
                     //时长剪辑
@@ -163,42 +175,42 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 case FinalConstants.REQUESTCODE_SELECTMOREVID_MERGE:
                     //视频合并
                     mSelectedVid=Matisse.obtainResult(data);
-                    EpMediaUtils epMediaUtils =new EpMediaUtils(this);
+                    //EpMediaUtils epMediaUtils =new EpMediaUtils(this);
                     epMediaUtils.setOutputPath(MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4"));
                     epMediaUtils.mergeVideos(mSelectedVid);
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_GETBGM:
                     //获取BGM
                     mSelectedVid=Matisse.obtainResult(data);
-                    EpMediaUtils epMediaUtils1=new EpMediaUtils(this);
-                    epMediaUtils1.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-                    epMediaUtils1.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("AUDIO","mp3"));
-                    epMediaUtils1.demuxerBGM();
+                    //EpMediaUtils epMediaUtils1=new EpMediaUtils(this);
+                    epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("AUDIO","mp3"));
+                    epMediaUtils.demuxerBGM();
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_ADDBGM:
                     //添加BGM
                     mSelectedVid=Matisse.obtainResult(data);
-                    Intent intent2=new Intent();
-                    intent2.setType("audio/*");
-                    intent2.setAction(Intent.ACTION_GET_CONTENT);
-                    intent2.addCategory(Intent.CATEGORY_OPENABLE);
-                    startActivityForResult(intent2,FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM);
 
-
-
-                    EpMediaUtils epMediaUtils2=new EpMediaUtils(this);
-                    epMediaUtils2.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-                    //epMediaUtils.setInputAudio();
-                    epMediaUtils2.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
-                    epMediaUtils2.music(0,1);
+                    Intent intent2=new Intent(this,AddBGMActivity.class);
+                    intent2.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    startActivity(intent2);
+                    //设置视频
+                    //EpMediaUtils epMediaUtils2=new EpMediaUtils(this);
+//                    epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+//                    epMediaUtils.setInputAudio(MyApplication.getWorkPath()+"test.mp3");
+//                    epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+//                    epMediaUtils.music(0,1);
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_REVERSE:
                     //倒放
                     mSelectedVid=Matisse.obtainResult(data);
-                    EpMediaUtils epMediaUtils3=new EpMediaUtils(this);
-                    epMediaUtils3.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-                    epMediaUtils3.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
-                    epMediaUtils3.reverse(true,false);
+                    //EpMediaUtils epMediaUtils3=new EpMediaUtils(this);
+                    epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+                    epMediaUtils.reverse(true,false);
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM:
+                    Toast.makeText(this,"音频选择成功",Toast.LENGTH_SHORT).show();
                     break;
             }
         }
