@@ -1,5 +1,8 @@
 package com.example.vedit.Activities;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,24 +12,21 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.ess.filepicker.FilePicker;
-import com.ess.filepicker.model.EssFile;
 import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.R;
 import com.example.vedit.Utils.EpMediaUtils;
 import com.example.vedit.Utils.FileSelectUtils;
 import com.example.vedit.Utils.FileUtils;
+import com.example.vedit.Utils.MediaUtils;
 import com.example.vedit.Utils.OthUtils;
-import com.vincent.filepicker.Constant;
-import com.vincent.filepicker.activity.AudioPickActivity;
 import com.zhihu.matisse.Matisse;
 
+import java.io.File;
 import java.util.List;
 
-import static com.vincent.filepicker.activity.AudioPickActivity.IS_NEED_RECORDER;
+import VideoHandle.EpEditor;
 
 public class ActionsActivity extends NoTitleActivity implements View.OnClickListener {
 
@@ -113,32 +113,28 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 break;
             case R.id.bt_actions7:
                 //旋转和镜像
+                Log.i(TAG,"旋转和镜像");
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_ROTATION);
                 break;
             case R.id.bt_actions8:
                 //倍速
+                Log.i(TAG,"倍速");
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_CHANGEPTS);
                 break;
             case R.id.bt_actions9:
                 //图片水印
-                break;
             case R.id.bt_actions10:
                 //文字水印
-//                Intent intent=new Intent(this, AudioPickActivity.class);
-//                intent.putExtra(IS_NEED_RECORDER,true);
-//                intent.putExtra(Constant.MAX_NUMBER,1);
-//                startActivityForResult(intent,Constant.REQUEST_CODE_PICK_AUDIO);
-
-                FilePicker.from(ActionsActivity.this)
-                        .chooseForMimeType()
-                        .isSingle()
-                        .setFileTypes("mp3")
-                        .requestCode(FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM)
-                        .start();
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_WATERMARK);
                 break;
             case R.id.bt_actions11:
                 //时间水印
+                Log.i(TAG,"时间水印");
+                new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_ADDTIME);
                 break;
             case R.id.bt_actions12:
                 //倒放
+                Log.i(TAG,"倒放");
                 new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_REVERSE);
                 break;
                 default:
@@ -150,11 +146,17 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK){
+            mSelectedVid=Matisse.obtainResult(data);
             EpMediaUtils epMediaUtils =new EpMediaUtils(this);
+            File file=new File(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            if (!file.exists()){
+                Log.e(TAG,"选择到失效文件");
+                Toast.makeText(ActionsActivity.this,"该视频文件不存在",Toast.LENGTH_SHORT).show();
+                return;
+            }
             switch (requestCode){
                 case FinalConstants.REQUESTCODE_SELECTVID_TRIM:
                     //时长剪辑
-                    mSelectedVid= Matisse.obtainResult(data);
                     Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
                     //创建意图对象
                     Intent intent=new Intent(this,TrimActivity.class);
@@ -164,7 +166,6 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_CROP:
                     //时长裁剪
-                    mSelectedVid= Matisse.obtainResult(data);
                     Log.d(TAG,"Matisse-mSelectedOneVid="+mSelectedVid);
                     //创建意图对象
                     Intent intent1=new Intent(this,CropActivity.class);
@@ -174,53 +175,185 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                     break;
                 case FinalConstants.REQUESTCODE_SELECTMOREVID_MERGE:
                     //视频合并
-                    mSelectedVid=Matisse.obtainResult(data);
-                    //EpMediaUtils epMediaUtils =new EpMediaUtils(this);
                     epMediaUtils.setOutputPath(MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4"));
                     epMediaUtils.mergeVideos(mSelectedVid);
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_GETBGM:
                     //获取BGM
-                    mSelectedVid=Matisse.obtainResult(data);
-                    //EpMediaUtils epMediaUtils1=new EpMediaUtils(this);
                     epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
                     epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("AUDIO","mp3"));
                     epMediaUtils.demuxerBGM();
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_ADDBGM:
                     //添加BGM
-                    mSelectedVid=Matisse.obtainResult(data);
-
                     Intent intent2=new Intent(this,AddBGMActivity.class);
                     intent2.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
                     startActivity(intent2);
-                    //设置视频
-                    //EpMediaUtils epMediaUtils2=new EpMediaUtils(this);
-//                    epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-//                    epMediaUtils.setInputAudio(MyApplication.getWorkPath()+"test.mp3");
-//                    epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
-//                    epMediaUtils.music(0,1);
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_ROTATION:
+                    //旋转和镜像
+                    Intent intent3=new Intent(this,ReverAndMirrActivity.class);
+                    intent3.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    startActivity(intent3);
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_REVERSE:
                     //倒放
-                    mSelectedVid=Matisse.obtainResult(data);
-                    //EpMediaUtils epMediaUtils3=new EpMediaUtils(this);
                     epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
                     epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
                     epMediaUtils.reverse(true,false);
                     break;
-                case FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM:
-                    Toast.makeText(this,"音频选择成功",Toast.LENGTH_SHORT).show();
+                case FinalConstants.REQUESTCODE_SELECTVID_ADDTIME:
+                    //时间水印
+                    showAddTimeDialog();
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_CHANGEPTS:
+                    //倍速
+                    showChangePTSDialog();
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_V2P:
+                    //视频转图片
+                    epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    epMediaUtils.setOutputPath(MyApplication.getWorkPath());
+                    epMediaUtils.video2pic(1048,720,30);
+                    break;
+                case FinalConstants.REQUESTCODE_SELECTVID_WATERMARK:
+                    //图片或文字水印
+                    Intent intent4=new Intent(this,WaterMarkActivity.class);
+                    intent4.putExtra(FinalConstants.INTENT_SELECTONEVID_KEY,new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                    startActivity(intent4);
                     break;
             }
         }
-//        if (requestCode==FinalConstants.REQUESTCODE_SELECTVID_V2P&&resultCode==RESULT_OK){
-//            //视频转图片
-//            mSelectedVid=Matisse.obtainResult(data);
-//            EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-//            epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-//            epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("PIC","jpg"));
-//            epMediaUtils.video2pic(1048,720,30);
-//        }
       }
+      //变速类型
+     final String[]pts=new String[]{"0.25","0.5","1.5","2","3","4"};
+    private int selectPTS=0;
+    private void showChangePTSDialog() {
+              Dialog dialog=new AlertDialog.Builder(this)
+                .setTitle("选择倍率")
+                .setCancelable(false)
+                .setSingleChoiceItems(pts, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectPTS=which;
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Toast.makeText(ActionsActivity.this, "取消", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                      .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                              changePTSExec();
+                          }
+                      })
+                      .create();
+              dialog.show();
+
+    }
+
+    //时间水印类型
+    final String[]type=new String[]{"hh:mm:ss","yyyy-MM-dd hh:mm:ss","yyyy年MM月dd日 hh时mm分ss秒"};
+    private int selectType=1;
+    private void showAddTimeDialog() {
+        Dialog dialog=new AlertDialog.Builder(this)
+                .setTitle("请选择类型")
+                .setCancelable(false)
+                .setSingleChoiceItems(type, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectType=which+1;
+                        Log.i(TAG,"选择的类型为"+selectType);
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Toast.makeText(ActionsActivity.this, "取消", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        addTimeExec();
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+    //变速
+    private void changePTSExec() {
+        EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+        epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+        epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        switch (selectPTS){
+            case 0:
+                Log.i(TAG,"变速0.25");
+                epMediaUtils.changePTS((float)0.25, EpEditor.PTS.ALL);
+                break;
+            case 1:
+                Log.i(TAG,"变速0.5");
+                epMediaUtils.changePTS((float) 0.5, EpEditor.PTS.ALL);
+                break;
+            case 2:
+                Log.i(TAG,"变速1.5");
+                epMediaUtils.changePTS((float)1.5, EpEditor.PTS.ALL);
+                break;
+            case 3:
+                Log.i(TAG,"变速2");
+                epMediaUtils.changePTS(2, EpEditor.PTS.ALL);
+                break;
+            case 4:
+                Log.i(TAG,"变速3");
+                epMediaUtils.changePTS(3, EpEditor.PTS.ALL);
+                break;
+            case 5:
+                Log.i(TAG,"变速4");
+                epMediaUtils.changePTS(4, EpEditor.PTS.ALL);
+                break;
+        }
+    }
+
+
+    //添加时间水印
+    private void addTimeExec() {
+          EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+          epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+          epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+          int vHeight,vWidth;
+        MediaUtils mediaUtils=MediaUtils.getInstance();
+        try {
+            mediaUtils.setSource(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+        }catch (Exception e){
+            Toast.makeText(ActionsActivity.this,"该视频文件失效或不可用",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        vHeight=Integer.parseInt(mediaUtils.getHeight());
+        vWidth=Integer.parseInt(mediaUtils.getWidth());
+        float size=vWidth/30;
+        switch (selectType){
+            case 1:
+                //8
+                Log.i(TAG,"类型1");
+                epMediaUtils.addTime(0,0,size,"white",1);
+                break;
+            case 2:
+                //19
+                Log.i(TAG,"类型2");
+                epMediaUtils.addTime(0,0,size,"white",2);
+                break;
+            case 3:
+                //11
+                Log.i(TAG,"类型3");
+                epMediaUtils.addTime(0,0,size,"white",3);
+                break;
+        }
+
+    }
 }

@@ -15,7 +15,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.AddBGMActivity"></activity>
+        <activity android:name=".Activities.WaterMarkActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".Activities.ReverAndMirrActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.AddBGMActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activities.ActionsActivity"
             android:screenOrientation="portrait" />

@@ -27,7 +27,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
-    implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8'
     implementation 'cn.imlibo:FilePicker:v0.0.5_alpha'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])

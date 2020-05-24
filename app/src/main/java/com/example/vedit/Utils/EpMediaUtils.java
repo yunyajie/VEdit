@@ -259,9 +259,8 @@ public  class EpMediaUtils {
      * @param color 文字颜色(white,black,blue,red...)
      * @param x     文字的x坐标
      * @param y     文字的y坐标
-     * @param ttf   文字字体的路径
      * @param type  时间类型(1==>hh:mm:ss,2==>yyyy-MM-dd hh:mm:ss,3==>yyyy年MM月dd日 hh时mm分ss秒) */
-    public void addTime(int x, int y, float size, String color, String ttf,int type){
+    public void addTime(int x, int y, float size, String color, int type){
         EpVideo epVideo=new EpVideo(inputVideo);
         epVideo.addTime(x,y,size,color,MyApplication.getSavePath()+"/msyh.ttf",type);
         exec(epVideo);

@@ -41,6 +41,14 @@ public class FinalConstants {
 	public static final int REQUESTCODE_SELECTAUD_ADDBGM=FINAL_BASE+16;
 	/** 倒放  */
 	public static final int REQUESTCODE_SELECTVID_REVERSE=FINAL_BASE+17;
+	/** 旋转和镜像  */
+	public static final int REQUESTCODE_SELECTVID_ROTATION=FINAL_BASE+18;
+	/** 时间水印  */
+	public static final int REQUESTCODE_SELECTVID_ADDTIME=FINAL_BASE+19;
+	/** 倍速  */
+	public static final int REQUESTCODE_SELECTVID_CHANGEPTS=FINAL_BASE+20;
+	/** 图片或文字水印  */
+	public static final int REQUESTCODE_SELECTVID_WATERMARK=FINAL_BASE+21;
 
 	/** 选择一个视频的键*/
 	public static final String INTENT_SELECTONEVID_KEY="SelectedOneVid";

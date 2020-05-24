@@ -64,7 +64,7 @@
                     android:onClick="trimDuration"
                     android:text="@string/ok_text"
                     android:background="@drawable/skipshape"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/white" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"

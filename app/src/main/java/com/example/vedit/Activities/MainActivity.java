@@ -62,16 +62,15 @@ public class MainActivity extends NoTitleActivity {
 
         test=OthUtils.getFiles(MyApplication.getWorkPath());
 
-
-
         Log.i(TAG,"test.size()=="+test.size());
         MediaUtils mediaUtils=MediaUtils.getInstance();
         for (int i = 0; i<test.size(); i++){
-            mediaUtils.setSource(test.get(i).getPath());
-            myWorks.add(new Item(mediaUtils.getVideoThumb(),test.get(i).getName()));
+            if (test.get(i).getName().contains("mp4")){
+                mediaUtils.setSource(test.get(i).getPath());
+                myWorks.add(new Item(mediaUtils.getVideoThumb(),test.get(i).getName()));
+            }
             Log.i(TAG,test.get(i).getName());
         }
-
         myAdapter=new MyAdapter<Item>(myWorks,R.layout.mywork_item) {
             @Override
             public void bindView(ViewHolder holder, Item obj) {
@@ -235,6 +234,15 @@ public class MainActivity extends NoTitleActivity {
                 return false;
             }
         });
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e(TAG,"更新列表");
+
+
     }
 
     private int dp2px(int dp) {

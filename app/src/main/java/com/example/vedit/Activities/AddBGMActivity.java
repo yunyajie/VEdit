@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,15 +49,18 @@ public class AddBGMActivity extends NoTitleActivity implements SurfaceHolder.Cal
     private MediaManager mediaManager;
     private MediaPlayer mediaPlayer;
     private Uri videoPath;
+    private Uri audioPath;
 
     private Button bt_adjust;
     private Button bt_addbgm;
     private Button bt_selectmp3;
     private Button bt_selectmp4;
 
-    private int old_volume=100;
+    private int old_volume=0;
     private int new_volume=100;
 
+    private boolean fromVideo=false;
+    private boolean isReady=false;
     //更新UI
     private Handler myHandler;
     private TimerUtils timerUtils;
@@ -176,6 +180,10 @@ public class AddBGMActivity extends NoTitleActivity implements SurfaceHolder.Cal
                 break;
             case R.id.bt_selectmp3:
                 //选择MP3
+                Intent intent=new Intent();
+                intent.setType("audio/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent,FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM);
                 break;
             case R.id.bt_selectmp4:
                 //选择MP4
@@ -184,8 +192,27 @@ public class AddBGMActivity extends NoTitleActivity implements SurfaceHolder.Cal
                 break;
             case R.id.bt_addbgm:
                 //完成
+                if (isReady){
+                    addBGM();
+                }else {
+                    Toast.makeText(AddBGMActivity.this,"请选择音频来源",Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
+    }
+
+    //添加背景音乐
+    private void addBGM() {
+        EpMediaUtils epMediaUtils1=new EpMediaUtils(AddBGMActivity.this);
+        epMediaUtils1.setInputVideo(new FileUtils(AddBGMActivity.this).getFilePathByUri(videoPath));
+        if (fromVideo){
+            epMediaUtils1.setInputAudio(MyApplication.getSavePath()+"temp.mp3");
+
+        }else {
+            epMediaUtils1.setInputAudio(new FileUtils(AddBGMActivity.this).getFilePathByUri(audioPath));
+        }
+        epMediaUtils1.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        epMediaUtils1.music((float)old_volume/100,(float)new_volume/100);
     }
 
     private void showBottomDialog() {
@@ -247,6 +274,10 @@ public class AddBGMActivity extends NoTitleActivity implements SurfaceHolder.Cal
 
     }
 
+    /**
+     * Created by Yajie on 2020/5/23 20:03
+     * 进度条
+     */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -270,12 +301,20 @@ public class AddBGMActivity extends NoTitleActivity implements SurfaceHolder.Cal
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode==RESULT_OK){
             if(requestCode==FinalConstants.REQUESTCODE_SELECTVID_GETBGM){
-//                //获取BGM
-//                mSelectedVid= Matisse.obtainResult(data);
-//                EpMediaUtils epMediaUtils=new EpMediaUtils(this);
-//                epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-//                epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("temp","mp3"));
-//                epMediaUtils.demuxerBGM();
+                fromVideo=true;
+                isReady=true;
+                //获取BGM
+                mSelectedVid= Matisse.obtainResult(data);
+                final EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+                epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+                epMediaUtils.setOutputPath(MyApplication.getSavePath()+"temp.mp3");
+                epMediaUtils.demuxerBGM();
+            }
+            if (requestCode==FinalConstants.REQUESTCODE_SELECTAUD_ADDBGM){
+                fromVideo=false;
+                isReady=true;
+                audioPath=data.getData();
+                Log.i(TAG,audioPath.toString());
             }
         }
     }
