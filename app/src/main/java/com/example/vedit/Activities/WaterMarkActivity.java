@@ -1,6 +1,10 @@
 package com.example.vedit.Activities;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,20 +14,32 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.Player.MediaManager;
 import com.example.vedit.R;
+import com.example.vedit.Utils.EpMediaUtils;
+import com.example.vedit.Utils.FileSelectUtils;
+import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.OthUtils;
 import com.example.vedit.Utils.TimerUtils;
+import com.example.vedit.Widgets.FrameOverlayPic;
+import com.zhihu.matisse.Matisse;
 
+import java.io.FileNotFoundException;
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.Callback, MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnCompletionListener, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
     private String TAG="WaterMarkActivity";
@@ -33,15 +49,24 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
     private TextView ip_ctime_tv;
     private TextView ip_ttime_tv;
     private SeekBar ip_seekbar;
+    private FrameOverlayPic pic_FOV;
+    private Button bt_watermark_pic;
+    private Button bt_watermark_text;
+    private Button bt_watermark_ok;
     private SurfaceHolder surfaceHolder;
     private MediaManager mediaManager;
     private MediaPlayer mediaPlayer;
     private Uri videoPath;
 
+    private Boolean watermark_pic=false;
+    private Boolean watermark_text=false;
+
 
     //更新UI
     private Handler myHandler;
     private TimerUtils timerUtils;
+
+    List<Uri> mSelectedPic;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +84,10 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
         ip_ctime_tv = (TextView) findViewById(R.id.ip_ctime_tv);
         ip_ttime_tv = (TextView) findViewById(R.id.ip_ttime_tv);
         ip_seekbar=(SeekBar)findViewById(R.id.ip_seekbar);
+        pic_FOV=(FrameOverlayPic)findViewById(R.id.pic_FOL);
+        bt_watermark_ok=(Button)findViewById(R.id.bt_watermark_ok);
+        bt_watermark_pic=(Button)findViewById(R.id.bt_watermark_pic);
+        bt_watermark_text=(Button)findViewById(R.id.bt_watermark_text);
 
         mediaManager=MediaManager.getInstance();
 
@@ -68,6 +97,10 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
         surfaceHolder.addCallback(this);
         ip_play_igview.setOnClickListener(this);
         ip_seekbar.setOnSeekBarChangeListener(this);
+
+        bt_watermark_ok.setOnClickListener(this);
+        bt_watermark_pic.setOnClickListener(this);
+        bt_watermark_text.setOnClickListener(this);
 
         myHandler=new WaterMarkActivity.MyHandler(this);
         timerUtils=new TimerUtils(myHandler);
@@ -122,12 +155,18 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
 
         watermark_frameLayout.getLayoutParams().width=videoWith;
         watermark_frameLayout.getLayoutParams().height=videoHeight;
+
+        ViewGroup.LayoutParams layoutParams=pic_FOV.getLayoutParams();
+        layoutParams.height=videoHeight;
+        layoutParams.width=videoWith;
+        pic_FOV.setLayoutParams(layoutParams);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
         mediaManager.loop();
     }
+
 
     @Override
     public void onClick(View v) {
@@ -139,6 +178,58 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
                     mediaManager.play();
                 }
                 break;
+            case R.id.bt_watermark_pic:
+                //图片水印
+                if (watermark_pic){
+                    watermark_pic=false;
+                    pic_FOV.setVisibility(View.INVISIBLE);
+                }else {
+                    new FileSelectUtils().selectOnePic(mSelectedPic,WaterMarkActivity.this,FinalConstants.REQUESTCODE_SELECTPIC_WATERMARK);
+                }
+                break;
+            case R.id.bt_watermark_ok:
+                //处理
+                Rect frameRect=pic_FOV.getFrameRect();
+                Rect parentRect=pic_FOV.getParentInfo();
+                //视频真实宽高
+                int Vwith=mediaPlayer.getVideoWidth();
+                int Vheight=mediaPlayer.getVideoHeight();
+                float picWidth=((float)frameRect.width()/parentRect.width())*Vwith;
+                float picHeight=((float)frameRect.height()/parentRect.height())*Vheight;
+                int x=(int)(((float)frameRect.left/parentRect.width())*Vwith);
+                int y=(int)(((float) frameRect.top/parentRect.height())*Vheight);
+                Log.e(TAG,"视频尺寸裁剪-----原视频:宽="+Vwith+"-----高="+Vheight+"--------图片水印范围:宽="+picWidth+"----高="+picHeight+"---x="+x+"---y="+y);
+                EpMediaUtils epMediaUtils=new EpMediaUtils(this);
+                epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(videoPath));
+                epMediaUtils.setInputPhoto(new FileUtils(this).getFilePathByUri(mSelectedPic.get(0)));
+                epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+                epMediaUtils.addDraw(x,y,picWidth,picHeight,false);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==RESULT_OK){
+            switch (requestCode){
+                case FinalConstants.REQUESTCODE_SELECTPIC_WATERMARK:
+                    //图片水印
+                    mSelectedPic= Matisse.obtainResult(data);
+                    ContentResolver resolver=getContentResolver();
+                    Bitmap waterpic=null;
+                    try {
+                        waterpic= BitmapFactory.decodeStream(resolver.openInputStream(mSelectedPic.get(0)));
+                    } catch (FileNotFoundException e) {
+                        Log.e(TAG,"图片不可用");
+                        Toast.makeText(WaterMarkActivity.this,"图片不可用",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    watermark_pic=true;
+                    pic_FOV.setWaterPic(waterpic);
+                    pic_FOV.setVisibility(View.VISIBLE);
+                    break;
+            }
         }
     }
 

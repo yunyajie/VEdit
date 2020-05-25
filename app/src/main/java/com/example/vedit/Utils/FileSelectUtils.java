@@ -1,6 +1,7 @@
 package com.example.vedit.Utils;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 
 import com.example.vedit.R;
@@ -46,5 +47,17 @@ public class FileSelectUtils {
                 .showPreview(true)
                 .imageEngine(new GlideEngine())
                 .forResult(REQUESTCODE_SELECTONEVID);
+    }
+    //选择一张图片
+    public void selectOnePic(List<Uri> mSelectedPic,Activity activity,int REQUESTCODE_SELECTONEPIC){
+        if (mSelectedPic!=null) mSelectedPic.clear();
+        Matisse.from(activity)
+                .choose(MimeType.ofImage())
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                .thumbnailScale(0.5f)
+                .imageEngine(new GlideEngine())
+                .showSingleMediaType(true)
+                .theme(R.style.Matisse_Dracula)
+                .forResult(REQUESTCODE_SELECTONEPIC);
     }
 }
