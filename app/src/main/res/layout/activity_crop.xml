@@ -56,7 +56,7 @@
             android:id="@+id/bt_cropInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/skipshape"
+            android:background="@drawable/ok_bt_shap"
             android:textColor="@color/white"
             android:text="@string/OK" />
     </LinearLayout>

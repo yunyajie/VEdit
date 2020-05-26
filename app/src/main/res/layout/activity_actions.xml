@@ -18,7 +18,7 @@
                 android:id="@+id/bt_actions1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="时长剪辑" />
 
             <TextView
                 android:id="@+id/tv_actions1"
@@ -38,7 +38,7 @@
                 android:id="@+id/bt_actions2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="尺寸裁剪" />
 
             <TextView
                 android:id="@+id/tv_actions2"
@@ -58,7 +58,7 @@
                 android:id="@+id/bt_actions3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="获取背景音乐" />
 
             <TextView
                 android:id="@+id/tv_actions3"
@@ -84,7 +84,7 @@
                 android:id="@+id/bt_actions4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="合并视频" />
 
             <TextView
                 android:id="@+id/tv_actions4"
@@ -104,7 +104,7 @@
                 android:id="@+id/bt_actions5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="添加背景音乐" />
 
             <TextView
                 android:id="@+id/tv_actions5"
@@ -124,7 +124,7 @@
                 android:id="@+id/bt_actions6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="视频转图片" />
 
             <TextView
                 android:id="@+id/tv_actions6"
@@ -150,7 +150,7 @@
                 android:id="@+id/bt_actions7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="旋转和镜像" />
 
             <TextView
                 android:id="@+id/tv_actions7"
@@ -170,7 +170,7 @@
                 android:id="@+id/bt_actions8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="倍速" />
 
             <TextView
                 android:id="@+id/tv_actions8"
@@ -190,7 +190,7 @@
                 android:id="@+id/bt_actions9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="图片水印" />
 
             <TextView
                 android:id="@+id/tv_actions9"
@@ -216,7 +216,7 @@
                 android:id="@+id/bt_actions10"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="文字水印" />
 
             <TextView
                 android:id="@+id/tv_actions10"
@@ -236,7 +236,7 @@
                 android:id="@+id/bt_actions11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="时间水印" />
 
             <TextView
                 android:id="@+id/tv_actions11"
@@ -256,7 +256,7 @@
                 android:id="@+id/bt_actions12"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="倒放" />
 
             <TextView
                 android:id="@+id/tv_actions12"

@@ -15,12 +15,14 @@ import androidx.annotation.Nullable;
 
 import com.example.vedit.Application.MyApplication;
 import com.example.vedit.Constants.FinalConstants;
+import com.example.vedit.Interface.ExecInterface;
 import com.example.vedit.R;
 import com.example.vedit.Utils.EpMediaUtils;
 import com.example.vedit.Utils.FileSelectUtils;
 import com.example.vedit.Utils.FileUtils;
 import com.example.vedit.Utils.MediaUtils;
 import com.example.vedit.Utils.OthUtils;
+import com.example.vedit.Widgets.SampleExecDialog;
 import com.zhihu.matisse.Matisse;
 
 import java.io.File;
@@ -212,9 +214,7 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_V2P:
                     //视频转图片
-                    epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-                    epMediaUtils.setOutputPath(MyApplication.getWorkPath());
-                    epMediaUtils.video2pic(1048,720,30);
+                    showV2PDialog();
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_WATERMARK:
                     //图片或文字水印
@@ -225,66 +225,75 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
             }
         }
       }
-      //变速类型
+      //视频转图片
+    final String[]rate=new String[]{"1","2","3","4","5","6"};
+    private int selectRate=1;
+    private void showV2PDialog() {
+        SampleExecDialog sampleExecDialog=new SampleExecDialog();
+        sampleExecDialog.diaogInit(ActionsActivity.this, "请选择每秒生成的图片数", rate, new ExecInterface() {
+            @Override
+            public void exec() {
+                video2photo();
+            }
+
+            @Override
+            public void setSelectEle(int which) {
+                selectRate=which+1;
+                Log.i(TAG,"每秒生成图片"+selectRate+"张");
+            }
+        });
+        sampleExecDialog.dialogShow();
+    }
+
+    //视频生成图片
+    private void video2photo() {
+        String inputVideo=new FileUtils(this).getFilePathByUri(mSelectedVid.get(0));
+        EpMediaUtils epMediaUtils=new EpMediaUtils(ActionsActivity.this);
+        epMediaUtils.setInputVideo(inputVideo);
+        epMediaUtils.setOutputPath(MyApplication.getPicPath()+"img_"+OthUtils.createFileName("","")+"_%03d.jpg");
+        MediaUtils mediaUtils=MediaUtils.getInstance();
+        mediaUtils.setSource(inputVideo);
+        epMediaUtils.video2pic(Integer.parseInt(mediaUtils.getWidth()),Integer.parseInt(mediaUtils.getHeight()),selectRate);
+    }
+
+    //变速类型
      final String[]pts=new String[]{"0.25","0.5","1.5","2","3","4"};
     private int selectPTS=0;
-    private void showChangePTSDialog() {
-              Dialog dialog=new AlertDialog.Builder(this)
-                .setTitle("选择倍率")
-                .setCancelable(false)
-                .setSingleChoiceItems(pts, 0, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        selectPTS=which;
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Toast.makeText(ActionsActivity.this, "取消", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                      .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                          @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                              changePTSExec();
-                          }
-                      })
-                      .create();
-              dialog.show();
 
+    public void showChangePTSDialog(){
+        final SampleExecDialog sampleExecDialog=new SampleExecDialog();
+        sampleExecDialog.diaogInit(ActionsActivity.this,"选择倍率", pts, new ExecInterface() {
+            @Override
+            public void exec() {
+                changePTSExec();
+            }
+
+            @Override
+            public void setSelectEle(int which) {
+                selectPTS=which;
+                Log.i(TAG,"selectPTS=="+selectPTS);
+            }
+        });
+        sampleExecDialog.dialogShow();
     }
 
     //时间水印类型
     final String[]type=new String[]{"hh:mm:ss","yyyy-MM-dd hh:mm:ss","yyyy年MM月dd日 hh时mm分ss秒"};
     private int selectType=1;
     private void showAddTimeDialog() {
-        Dialog dialog=new AlertDialog.Builder(this)
-                .setTitle("请选择类型")
-                .setCancelable(false)
-                .setSingleChoiceItems(type, 0, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        selectType=which+1;
-                        Log.i(TAG,"选择的类型为"+selectType);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Toast.makeText(ActionsActivity.this, "取消", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        addTimeExec();
-                    }
-                })
-                .create();
-        dialog.show();
+        SampleExecDialog sampleExecDialog=new SampleExecDialog();
+        sampleExecDialog.diaogInit(ActionsActivity.this, "请选择类型", type, new ExecInterface() {
+            @Override
+            public void exec() {
+                addTimeExec();
+            }
+
+            @Override
+            public void setSelectEle(int which) {
+                selectType=which+1;
+            }
+        });
+        sampleExecDialog.dialogShow();
     }
 
     //变速

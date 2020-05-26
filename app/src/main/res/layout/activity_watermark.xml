@@ -37,6 +37,12 @@
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"
                     android:visibility="invisible"/>
+                <com.example.vedit.Widgets.FrameOverlayText
+                    android:id="@+id/text_FOL"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:visibility="invisible"
+                    />
             </FrameLayout>
         </LinearLayout>
 
@@ -114,11 +120,31 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/bt_watermark_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ok_bt_shap"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="清除" />
+
+            <Button
+                android:id="@+id/bt_setfont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ok_bt_shap"
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:text="字体设置" />
+
+            <Button
                 android:id="@+id/bt_watermark_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="确定" />
+                android:background="@drawable/ok_bt_shap"
+                android:text="完成"
+                android:textColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
 

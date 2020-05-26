@@ -19,11 +19,11 @@ import com.example.vedit.Utils.DimensionUtil;
  * @ProjectName: VEdit
  * @Package: com.example.vedit.Widgets
  * @ClassName: FrameOverlayPic
- * @Description: java类作用描述
+ * @Description: 图片水印
  * @Author: yunyajie
- * @CreateDate: 2020/5/25 18:27
+ * @CreateDate: 2020/5/16 18:27
  * @UpdateUser: 更新者：
- * @UpdateDate: 2020/5/25 18:27
+ * @UpdateDate: 2020/5/16 18:27
  * @UpdateRemark: 更新说明：
  * @Version: 1.0
  */

@@ -63,7 +63,7 @@
                     android:layout_weight="1"
                     android:onClick="trimDuration"
                     android:text="@string/ok_text"
-                    android:background="@drawable/skipshape"
+                    android:background="@drawable/ok_bt_shap"
                     android:textColor="@color/white" />
                 <LinearLayout
                     android:layout_width="0dp"

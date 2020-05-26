@@ -10,6 +10,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.vedit.Application.MyApplication;
+import com.example.vedit.Bean.PicWatermark;
+import com.example.vedit.Bean.TextWatermark;
 import com.example.vedit.Constants.FinalConstants;
 import com.example.vedit.Widgets.ExecProgressDialog;
 
@@ -107,6 +109,33 @@ public  class EpMediaUtils {
         epVideo.addDraw(epDraw);
         exec(epVideo);
     }
+    public void addDraw(List<PicWatermark>picWatermarks){
+        if (epVideo==null){
+            epVideo=new EpVideo(inputVideo);
+        }
+        for (int i=0;i<picWatermarks.size();i++){
+            EpDraw epDraw=new EpDraw(picWatermarks.get(i).getPicPath(),picWatermarks.get(i).getPicX(),
+                    picWatermarks.get(i).getPicY(),
+                    picWatermarks.get(i).getPicWidth(),
+                    picWatermarks.get(i).getPicHeight(),
+                    false,
+                    picWatermarks.get(i).getStartTime(),
+                    picWatermarks.get(i).getEndTime());
+            epVideo.addDraw(epDraw);
+        }
+    }
+    public void addText(List<TextWatermark>textWatermarks){
+        if (epVideo==null){
+            epVideo=new EpVideo(inputVideo);
+        }
+        for(int i=0;i<textWatermarks.size();i++){
+            EpText epText=new EpText(textWatermarks.get(i).getTextX(),textWatermarks.get(i).getTextY(),textWatermarks.get(i).getTextSize(),
+                    textWatermarks.get(i).getTextColor(),MyApplication.getTTFPath(),textWatermarks.get(i).getContent(),
+                    new EpText.Time(textWatermarks.get(i).getStartTime(),textWatermarks.get(i).getEndTime()));
+            epVideo.addText(epText);
+        }
+    }
+
     /** 添加自定义滤镜    举例 String filter = "lutyuv=y=maxval+minval-val:u=maxval+minval-val:v=maxval+minval-val";
      * 底片效果*/
     public void addFilter(){
@@ -130,8 +159,6 @@ public  class EpMediaUtils {
 
         //把亮度(y)反转
         String filter1="lutyuv=y=negval";
-
-
 
         epVideo.addFilter(filter);
         exec(epVideo);
@@ -317,6 +344,12 @@ public  class EpMediaUtils {
                 execProgressDialog.setProgress(progress);
             }
         });
+    }
+
+    /** 截图  */
+    public void screenShot(String inputVideo,String outputPicPath,int position){
+        String cmd="-i "+inputVideo+" -ss "+OthUtils.secToTimeRetain(position)+" -vframes 1 "+outputPicPath;
+        execCmd(cmd,0);
     }
     /** 自定义命令
      * @param cmd              命令

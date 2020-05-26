@@ -18,6 +18,7 @@ public class MyApplication extends Application {
 
 	private static String savePath;
 	private static String workPath;
+	private static String picPath;
 	//闪屏显示判断，第一次启动显示
 	private static int isRunning;
 
@@ -44,12 +45,17 @@ public class MyApplication extends Application {
 		//savePath = Environment.getExternalStorageDirectory().getPath() + "/EpMedia/";
 		savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/VEdit/";
 		workPath=savePath+"myworks/";
+		picPath=savePath+"pic/";
 		//Log.i("SD卡是否被挂载",String.valueOf( Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)));
 		File file = new File(savePath);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 		file=new File(workPath);
+		if (!file.exists()){
+			file.mkdirs();
+		}
+		file=new File(picPath);
 		if (!file.exists()){
 			file.mkdirs();
 		}
@@ -64,6 +70,7 @@ public class MyApplication extends Application {
 		return savePath;
 	}
 	public static String getWorkPath(){return workPath;}
+	public static String getPicPath(){return picPath;}
 	/** 获取字体文件路径  */
 	public static String getTTFPath(){return savePath+"/msyh.ttf";}
 
