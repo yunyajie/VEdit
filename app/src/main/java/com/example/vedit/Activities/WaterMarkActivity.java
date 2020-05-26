@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -282,9 +283,8 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
                         int x=(int)(((float)frameRect.left/parentRect.width())*Vwith);
                         int y=(int)(((float) frameRect.top/parentRect.height())*Vheight);
                         int fontSize=text_FOV.getFontSize();
-                        int fontColor=text_FOV.getFontColor();
                         String content=text_FOV.getTextWatermark();
-                        textWatermarks.add(new TextWatermark(x,y, EpText.Color.White,(float)fontSize,content,(int)(startTime_text/1000),(int)(endTime_text/1000)));
+                        textWatermarks.add(new TextWatermark(x,y,fontColor,(float)fontSize,content,(int)(startTime_text/1000),(int)(endTime_text/1000)));
                     }
                     watermark_text=false;
                     text_FOV.setVisibility(View.INVISIBLE);
@@ -334,6 +334,10 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
         }
     }
     private void addWatermark(){
+        if (watermark_pic||watermark_text){
+            Toast.makeText(WaterMarkActivity.this,"水印添加还未完成",Toast.LENGTH_SHORT).show();
+            return;
+        }
         boolean key=false;
         EpMediaUtils epMediaUtils=new EpMediaUtils(this);
         epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(videoPath));
@@ -436,7 +440,10 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
     }
 
     private int fontSize=40;
+    private EpText.Color fontColor=EpText.Color.White;
+    private int colorKey=8;
     private void setFontDialog() {
+        mediaManager.pause();
         final Dialog dialog=new Dialog(this,R.style.Theme_AppCompat_DayNight_Dialog);
         View view=View.inflate(this,R.layout.layout_setfont,null);
         dialog.setContentView(view);
@@ -469,13 +476,99 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
                 }
             }
         });
+        RadioGroup rg_setfontcolor=(RadioGroup)dialog.findViewById(R.id.rg_setfontcolor);
+        rg_setfontcolor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId){
+                    case R.id.rb_fontcolor_red:
+                        colorKey=1;
+                        fontColor=EpText.Color.Red;
+                        break;
+                    case R.id.rb_fontcolor_black:
+                        colorKey=2;
+                        fontColor=EpText.Color.Black;
+                        break;
+                    case R.id.rb_fontcolor_blue:
+                        colorKey=3;
+                        fontColor=EpText.Color.Blue;
+                        break;
+                    case R.id.rb_fontcolor_cyan:
+                        colorKey=4;
+                        fontColor=EpText.Color.Cyan;
+                        break;
+                    case R.id.rb_fontcolor_darkblue:
+                        colorKey=5;
+                        fontColor=EpText.Color.DarkBlue;
+                        break;
+                    case R.id.rb_fontcolor_green:
+                        colorKey=6;
+                        fontColor=EpText.Color.Green;
+                        break;
+                    case R.id.rb_fontcolor_orange:
+                        colorKey=7;
+                        fontColor=EpText.Color.Orange;
+                        break;
+                    case R.id.rb_fontcolor_white:
+                        colorKey=8;
+                        fontColor=EpText.Color.White;
+                        break;
+                    case R.id.rb_fontcolor_yellow:
+                        colorKey=9;
+                        fontColor=EpText.Color.Yellow;
+                        break;
+                    case R.id.rb_fontcolor_skyblue:
+                        colorKey=10;
+                        fontColor=EpText.Color.SkyBlue;
+                        break;
+
+                }
+            }
+        });
         Button bt_setfont_ok=(Button)dialog.findViewById(R.id.bt_setfont_ok);
         bt_setfont_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
                 text_FOV.setFontSize(fontSize);
+                switch (colorKey){
+                    case 1:
+                        text_FOV.setFontColor(Color.RED);
+                        break;
+                    case 2:
+                        text_FOV.setFontColor(Color.BLACK);
+                        break;
+                    case 3:
+                        text_FOV.setFontColor(Color.BLUE);
+                        break;
+                    case 4:
+                        text_FOV.setFontColor(Color.CYAN);
+                        break;
+                    case 5:
+                        //深蓝
+                        text_FOV.setFontColor(Color.rgb(0,0,139));
+                        break;
+                    case 6:
+                        text_FOV.setFontColor(Color.GREEN);
+                        break;
+                    case 7:
+                        text_FOV.setFontColor(Color.rgb(255,165,0));
+                        break;
+                    case 8:
+                        text_FOV.setFontColor(Color.WHITE);
+                        break;
+                    case 9:
+                        text_FOV.setFontColor(Color.YELLOW);
+                        break;
+                    case 10:
+                        //天蓝
+                        text_FOV.setFontColor(Color.rgb(135,206,235));
+                        break;
+
+                }
+
                 Log.i(TAG,"设置字体大小为="+fontSize);
+                Log.i(TAG,"字体颜色为："+colorKey);
             }
         });
         dialog.show();

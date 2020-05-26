@@ -29,10 +29,6 @@
             android:layout_height="wrap_content"
             android:text="字体大小" />
 
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/rg_setfontsize">
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -42,20 +38,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal" >
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:id="@+id/rg_setfontsize">
 
                     <RadioButton
                         android:id="@+id/rb_fontsize_40"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
                         android:text="40" />
 
                     <RadioButton
                         android:id="@+id/rb_fontsize_50"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="50" />
 
                     <RadioButton
@@ -68,21 +66,15 @@
                         android:id="@+id/rb_fontsize_70"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="70" />
-
                     <RadioButton
                         android:id="@+id/rb_fontsize_80"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="80" />
+                    </RadioGroup>
                 </LinearLayout>
             </HorizontalScrollView>
-
-        </RadioGroup>
-
-
     </LinearLayout>
 
     <LinearLayout
@@ -95,6 +87,77 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="字体颜色" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal" >
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:id="@+id/rg_setfontcolor">
+
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_red"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="红" />
+
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_blue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="蓝" />
+
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_yellow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="黄" />
+
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="黑" />
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_darkblue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="深蓝" />
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_green"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="绿" />
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_skyblue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="天空蓝" />
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_orange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="橙" />
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="白" />
+                    <RadioButton
+                        android:id="@+id/rb_fontcolor_cyan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="蓝绿" />
+                </RadioGroup>
+            </LinearLayout>
+        </HorizontalScrollView>
 
 
     </LinearLayout>

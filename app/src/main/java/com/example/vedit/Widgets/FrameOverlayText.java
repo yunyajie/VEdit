@@ -85,7 +85,7 @@ public class FrameOverlayText extends View {
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setStrokeWidth(8);
         textPaint.setTextSize(fontSize);
-        textPaint.setColor(Color.WHITE);
+        textPaint.setColor(fontColor);
         textPaint.setTextAlign(Paint.Align.CENTER);
     }
 
@@ -229,6 +229,10 @@ public class FrameOverlayText extends View {
         this.fontSize = textSize;
         textPaint.setTextSize(textSize);
         adjustFrameRect();
+        invalidate();
+    }
+    public void setFontColor(int fontcolor){
+        textPaint.setColor(fontcolor);
         invalidate();
     }
 
