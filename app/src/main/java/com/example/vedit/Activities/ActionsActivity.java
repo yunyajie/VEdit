@@ -1,14 +1,12 @@
 package com.example.vedit.Activities;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -44,6 +42,7 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     private Button bt_actions10;
     private Button bt_actions11;
     private Button bt_actions12;
+    private ImageButton ib_return;
     List<Uri> mSelectedVid;
     private static String TAG="ActionsActivity";
 
@@ -68,6 +67,7 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
         bt_actions10=(Button)findViewById(R.id.bt_actions10);
         bt_actions11=(Button)findViewById(R.id.bt_actions11);
         bt_actions12=(Button)findViewById(R.id.bt_actions12);
+        ib_return=(ImageButton)findViewById(R.id.ib_return);
 
 
         bt_actions1.setOnClickListener(this);
@@ -82,6 +82,7 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
         bt_actions10.setOnClickListener(this);
         bt_actions11.setOnClickListener(this);
         bt_actions12.setOnClickListener(this);
+        ib_return.setOnClickListener(this);
     }
 
     @Override
@@ -138,6 +139,10 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 //倒放
                 Log.i(TAG,"倒放");
                 new FileSelectUtils().selectOneVid(mSelectedVid,ActionsActivity.this,FinalConstants.REQUESTCODE_SELECTVID_REVERSE);
+                break;
+            case R.id.ib_return:
+                //返回
+                finish();
                 break;
                 default:
                     break;

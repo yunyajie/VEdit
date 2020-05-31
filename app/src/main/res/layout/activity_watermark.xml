@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|center_vertical"
                     android:layout_weight="1"
-                    app:srcCompat="@android:drawable/ic_menu_edit" />
+                    android:background="@drawable/ic_text_watermask_"/>
 
                 <Button
                     android:id="@+id/bt_watermark_text"

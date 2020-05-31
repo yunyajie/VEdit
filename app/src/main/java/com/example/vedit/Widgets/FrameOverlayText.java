@@ -1,7 +1,6 @@
 package com.example.vedit.Widgets;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,9 +11,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
-import com.example.vedit.Activities.WaterMarkActivity;
 import com.example.vedit.Interface.ViewErrorListener;
 import com.example.vedit.Utils.DimensionUtil;
 

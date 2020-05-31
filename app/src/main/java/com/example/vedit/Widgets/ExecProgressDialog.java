@@ -37,5 +37,4 @@ public class ExecProgressDialog {
     public void setProgress(float progress){
         progressDialog.setProgress((int)(progress*100));
     }
-
 }
