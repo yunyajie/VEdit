@@ -151,7 +151,7 @@ public class FrameOverlayText extends View {
     //获取矩形的四个点坐标，方便截取矩形中的视频
     public Rect getFrameRect(){
         Rect rect=new Rect();
-        rect.left=(int)frameRect.left;
+        rect.left=(int) frameRect.left;
         rect.top=(int)frameRect.top;
         rect.right=(int)frameRect.right;
         rect.bottom=(int)frameRect.bottom;
@@ -243,9 +243,5 @@ public class FrameOverlayText extends View {
 
     public int getFontSize() {
         return fontSize;
-    }
-
-    public int getFontColor() {
-        return fontColor;
     }
 }

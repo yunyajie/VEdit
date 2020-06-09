@@ -237,14 +237,6 @@ public class MainActivity extends NoTitleActivity {
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.e(TAG,"更新列表");
-
-
-    }
-
     private int dp2px(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
                 getResources().getDisplayMetrics());
@@ -325,5 +317,20 @@ public class MainActivity extends NoTitleActivity {
         moveTaskToBack(true);
     }
 
-
+    @Override
+    protected void onRestart() {
+        Log.e(TAG, MyApplication.getNewFiles().size()+"---"+MyApplication.getNewFiles().toString());
+        Log.e(TAG,myWorks.size()+"--"+myWorks.toString());
+        List<String> newfiles=MyApplication.getNewFiles();
+        MediaUtils mediaUtils=MediaUtils.getInstance();
+        for (int i=0;i<newfiles.size();i++){
+            if (newfiles.get(i).contains("mp4")){
+                mediaUtils.setSource(newfiles.get(i));
+                myWorks.add(new Item(mediaUtils.getVideoThumb(),new File(newfiles.get(i)).getName()));
+            }
+        }
+        MyApplication.clearNewFiles();
+        myAdapter.notifyDataSetChanged();
+        super.onRestart();
+    }
 }

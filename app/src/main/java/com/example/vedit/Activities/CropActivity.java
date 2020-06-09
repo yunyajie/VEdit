@@ -1,7 +1,9 @@
 package com.example.vedit.Activities;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -178,8 +180,16 @@ public class CropActivity extends NoTitleActivity implements SurfaceHolder.Callb
         Log.e(TAG,"视频尺寸裁剪-----原视频:宽="+Vwith+"-----高="+Vheight+"--------裁剪视频范围:宽="+videoWidth+"----高="+videoHeight+"---x="+x+"---y="+y);
         EpMediaUtils epMediaUtils=new EpMediaUtils(CropActivity.this);
         epMediaUtils.setInputVideo(videoPath.getPath());
-        epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        String outputPath=MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4");
+        epMediaUtils.setOutputPath(outputPath);
         epMediaUtils.crop(videoWidth,videoHeight,x,y);
+        MyApplication.addNewFile(outputPath);
+        //记录新生成的文件
+        MyApplication.addNewFile(outputPath);
+        SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("filePath",outputPath);
+        editor.commit();
     }
 
     @Override

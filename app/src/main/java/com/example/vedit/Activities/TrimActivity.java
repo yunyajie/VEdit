@@ -3,6 +3,7 @@ package com.example.vedit.Activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -352,8 +353,15 @@ public class TrimActivity extends Activity implements SurfaceHolder.Callback, Vi
         Log.i(TAG, "视频时长剪辑开始：startTime=" + startTime + "----------endTime=" + endTime + "---------duration=" + (endTime - startTime));
         EpMediaUtils epMediaUtils=new EpMediaUtils(this);
         epMediaUtils.setInputVideo(videopath);
-        epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        String outputPath=MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4");
+        epMediaUtils.setOutputPath(outputPath);
         epMediaUtils.clip(startTime,endTime-startTime);
+        //记录新生成的文件
+        MyApplication.addNewFile(outputPath);
+        SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("filePath",outputPath);
+        editor.commit();
 
     }
 

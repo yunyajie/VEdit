@@ -3,8 +3,10 @@ package com.example.vedit.Activities;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -281,9 +283,10 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
                         Rect parentRect=text_FOV.getParentInfo();
                         int x=(int)(((float)frameRect.left/parentRect.width())*Vwith);
                         int y=(int)(((float) frameRect.top/parentRect.height())*Vheight);
-                        int fontSize=text_FOV.getFontSize();
+                        float fontSize=((float)frameRect.height()/parentRect.height())*Vheight;
+                        Log.e(TAG,"fontsize=="+fontSize);
                         String content=text_FOV.getTextWatermark();
-                        textWatermarks.add(new TextWatermark(x,y,fontColor,(float)fontSize,content,(int)(startTime_text/1000),(int)(endTime_text/1000)));
+                        textWatermarks.add(new TextWatermark(x,y,fontColor,fontSize,content,(int)(startTime_text/1000),(int)(endTime_text/1000)));
                     }
                     watermark_text=false;
                     text_FOV.setVisibility(View.INVISIBLE);
@@ -340,7 +343,8 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
         boolean key=false;
         EpMediaUtils epMediaUtils=new EpMediaUtils(this);
         epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(videoPath));
-        epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        String outputPath=MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4");
+        epMediaUtils.setOutputPath(outputPath);
         if (picWatermarks!=null&&picWatermarks.size()!=0){
             key=true;
             epMediaUtils.addDraw(picWatermarks);
@@ -354,6 +358,12 @@ public class WaterMarkActivity extends NoTitleActivity implements SurfaceHolder.
             return;
         }
         epMediaUtils.multiOperate();
+        //记录新生成的文件
+        MyApplication.addNewFile(outputPath);
+        SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("filePath",outputPath);
+        editor.commit();
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

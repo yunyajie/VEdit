@@ -1,6 +1,8 @@
 package com.example.vedit.Activities;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -211,8 +213,16 @@ public class AddBGMActivity extends NoTitleActivity implements SurfaceHolder.Cal
         }else {
             epMediaUtils1.setInputAudio(new FileUtils(AddBGMActivity.this).getFilePathByUri(audioPath));
         }
-        epMediaUtils1.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        String outputPath=MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4");
+        epMediaUtils1.setOutputPath(outputPath);
         epMediaUtils1.music((float)old_volume/100,(float)new_volume/100);
+        //记录新生成的文件
+        MyApplication.addNewFile(outputPath);
+        SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("filePath",outputPath);
+        editor.commit();
+
     }
 
     private void showBottomDialog() {

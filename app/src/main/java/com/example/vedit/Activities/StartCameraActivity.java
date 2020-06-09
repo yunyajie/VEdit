@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -129,8 +130,6 @@ public class StartCameraActivity extends AppCompatActivity {
         intent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
         //设置视频录制质量
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY,1);
-        //设置视频最大允许录制时长(10秒)
-       // intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT,10*1000);
 //        //设置视频最大允许尺寸
 //        intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT,1000);
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
@@ -168,9 +167,9 @@ public class StartCameraActivity extends AppCompatActivity {
         //判断是否是AndroidN以及更高的版本
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
             photoUri= FileProvider.getUriForFile(this,
-                    "com.example.vedit.fileprovider",new File(SAVE_PATH, photoName));
+                    "com.example.vedit.fileprovider",new File(MyApplication.getPicPath(), photoName));
         }else {
-            photoUri=Uri.fromFile(new File(SAVE_PATH, photoName));
+            photoUri=Uri.fromFile(new File(MyApplication.getPicPath(), photoName));
         }
         Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager())!=null){
@@ -195,6 +194,9 @@ public class StartCameraActivity extends AppCompatActivity {
                 break;
             case FinalConstants.REQUEST_CAPTURE_VIDEO:
                 if (resultCode == RESULT_OK) {
+                    //指定更新某个文件，添加到媒体库
+                    MediaScannerConnection.scanFile(StartCameraActivity.this,new String[]{SAVE_PATH+videoName},null,null);
+                    MyApplication.addNewFile(SAVE_PATH+videoName);
                     Toast.makeText(this, "拍摄完成", Toast.LENGTH_SHORT).show();
                 } else {
                     File tempVideo = new File(SAVE_PATH, videoName);

@@ -7,6 +7,8 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Yajie on 2020/2/10.
@@ -22,19 +24,15 @@ public class MyApplication extends Application {
 	//闪屏显示判断，第一次启动显示
 	private static int isRunning;
 
-	public static int getIsRunning() {
-		return isRunning;
-	}
+	private static List<String>newFiles;
 
-	public static void setIsRunning(int isRunning) {
-		MyApplication.isRunning = isRunning;
-	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		//APP启动
 		isRunning=0;
+		newFiles=new ArrayList<String>();
 		//初始化全局上下文
 		mContext=getApplicationContext();
 		choseSavePath();
@@ -71,6 +69,9 @@ public class MyApplication extends Application {
 	}
 	public static String getWorkPath(){return workPath;}
 	public static String getPicPath(){return picPath;}
+	public static List<String> getNewFiles(){return newFiles;}
+	public static void  addNewFile(String newfile){newFiles.add(newfile);}
+	public static void clearNewFiles(){newFiles.clear();}
 	/** 获取字体文件路径  */
 	public static String getTTFPath(){return savePath+"/msyh.ttf";}
 
@@ -108,5 +109,14 @@ public class MyApplication extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	public static int getIsRunning() {
+		return isRunning;
+	}
+
+	public static void setIsRunning(int isRunning) {
+		MyApplication.isRunning = isRunning;
 	}
 }

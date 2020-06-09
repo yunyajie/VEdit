@@ -1,10 +1,11 @@
 package com.example.vedit.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -158,6 +159,12 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
             mSelectedVid=Matisse.obtainResult(data);
             EpMediaUtils epMediaUtils =new EpMediaUtils(this);
             File file=new File(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
+            //输出文件名
+            String outputPath=MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4");
+            //记录新生成的文件
+            SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor=sharedPreferences.edit();
+
             if (!file.exists()){
                 Log.e(TAG,"选择到失效文件");
                 Toast.makeText(ActionsActivity.this,"该视频文件不存在",Toast.LENGTH_SHORT).show();
@@ -184,8 +191,11 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                     break;
                 case FinalConstants.REQUESTCODE_SELECTMOREVID_MERGE:
                     //视频合并
-                    epMediaUtils.setOutputPath(MyApplication.getWorkPath()+ OthUtils.createFileName("VIDEO","mp4"));
+                    epMediaUtils.setOutputPath(outputPath);
                     epMediaUtils.mergeVideos(mSelectedVid);
+                    MyApplication.addNewFile(outputPath);
+                    editor.putString("filePath",outputPath);
+                    editor.commit();
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_GETBGM:
                     //获取BGM
@@ -208,8 +218,12 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 case FinalConstants.REQUESTCODE_SELECTVID_REVERSE:
                     //倒放
                     epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-                    epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+                    epMediaUtils.setOutputPath(outputPath);
                     epMediaUtils.reverse(true,false);
+                    Log.e(TAG,outputPath);
+                    MyApplication.addNewFile(outputPath);
+                    editor.putString("filePath",outputPath);
+                    editor.commit();
                     break;
                 case FinalConstants.REQUESTCODE_SELECTVID_ADDTIME:
                     //时间水印
@@ -307,7 +321,8 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     private void changePTSExec() {
         EpMediaUtils epMediaUtils=new EpMediaUtils(this);
         epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-        epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+        String outputPath=MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4");
+        epMediaUtils.setOutputPath(outputPath);
         switch (selectPTS){
             case 0:
                 Log.i(TAG,"变速0.25");
@@ -334,6 +349,12 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 epMediaUtils.changePTS(4, EpEditor.PTS.ALL);
                 break;
         }
+        //记录新生成的文件
+        MyApplication.addNewFile(outputPath);
+        SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("filePath",outputPath);
+        editor.commit();
     }
 
 
@@ -341,7 +362,8 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
     private void addTimeExec() {
           EpMediaUtils epMediaUtils=new EpMediaUtils(this);
           epMediaUtils.setInputVideo(new FileUtils(this).getFilePathByUri(mSelectedVid.get(0)));
-          epMediaUtils.setOutputPath(MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4"));
+          String outputPath=MyApplication.getWorkPath()+OthUtils.createFileName("VIDEO","mp4");
+          epMediaUtils.setOutputPath(outputPath);
           int vHeight,vWidth;
         MediaUtils mediaUtils=MediaUtils.getInstance();
         try {
@@ -370,6 +392,21 @@ public class ActionsActivity extends NoTitleActivity implements View.OnClickList
                 epMediaUtils.addTime(0,0,size,"white",3);
                 break;
         }
+        //记录新生成的文件
+        MyApplication.addNewFile(outputPath);
+        SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("filePath",outputPath);
+        editor.commit();
+    }
 
+    @Override
+    protected void onRestart() {
+        SharedPreferences sharedPreferences=getSharedPreferences("newfile", Context.MODE_PRIVATE);
+        String filePath=sharedPreferences.getString("filePath","");
+        Log.e(TAG+"--onRestart","filePath==="+filePath);
+        //指定更新某个文件，添加到媒体库
+        MediaScannerConnection.scanFile(ActionsActivity.this,new String[]{filePath},null,null);
+        super.onRestart();
     }
 }
